@@ -1,0 +1,29 @@
+.env
+.env.local
+.env*.local
+*.pem
+*.key
+*.p12
+credentials*
+service-account*.json
+
+# O banco é um arquivo local, com dado de exemplo. Não vai para o git:
+# cada pessoa recria o dela com `npx prisma db push && npx prisma db seed`.
+*.db
+*.db-journal
+*.sqlite
+
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+.vercel/
+
+# Nada de dado real no repositório.
+dados/
+*.csv
+*.xlsx
+!exemplos/*.csv
+
+.DS_Store

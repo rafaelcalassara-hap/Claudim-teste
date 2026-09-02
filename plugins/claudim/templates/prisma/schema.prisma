@@ -1,0 +1,36 @@
+// Schema desta aplicação. Ela é dona destas tabelas — pode ler e escrever.
+// Tabela de sistema corporativo NÃO entra aqui: aquilo é leitura, via view.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// O banco é um arquivo dentro do projeto: `prisma/dev.db`. Sem conta, sem
+// servidor, sem senha — e por isso sem nada no `.env`. Ele nasce junto com o
+// projeto, no `/comecar`.
+//
+// Consequência que vale saber: nada de tipo nativo (`@db.Decimal`, `@db.VarChar`
+// e afins). SQLite não tem esses tipos e o Prisma recusa o schema. Veja a skill
+// `consultar-banco`.
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+/// Exemplo. Troque pelos campos que o PLANO.md pedir.
+/// Sem coluna de CPF, carteirinha ou condição de saúde — de propósito.
+/// Se precisar de uma, invoque a skill `dados-sensiveis` antes de criar.
+model Evento {
+  id       String   @id @default(cuid())
+  criadoEm DateTime @default(now()) @map("criado_em")
+  canal    String
+  uf       String
+
+  /// Dinheiro em centavos, número inteiro. SQLite não tem tipo decimal:
+  /// guardar 19.90 como número quebrado erra o arredondamento na soma.
+  /// Divida por 100 só na hora de mostrar na tela.
+  valorCentavos Int @map("valor_centavos")
+
+  @@index([criadoEm])
+  @@map("eventos")
+}

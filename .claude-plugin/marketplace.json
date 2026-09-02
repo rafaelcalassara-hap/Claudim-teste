@@ -1,0 +1,21 @@
+{
+  "name": "greenfield-marketplace",
+  "owner": {
+    "name": "Greenfield LLC",
+    "email": "plugins@greenfield.example"
+  },
+  "metadata": {
+    "description": "Marketplace interno de plugins de desenvolvimento assistido por IA",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "claudim",
+      "source": "./plugins/claudim",
+      "description": "Construa aplicações internas (Next.js + Prisma + SQLite, sessão com Clerk) com guardrails de LGPD/ANS. Para pessoas de marketing, growth, dados e operações.",
+      "version": "0.2.0",
+      "category": "development",
+      "keywords": ["nextjs", "typescript", "prisma", "sqlite", "lgpd", "compliance", "interno"]
+    }
+  ]
+}

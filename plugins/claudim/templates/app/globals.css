@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Tailwind v4: o tema é declarado aqui, não em tailwind.config.js.
+   Cada token vira uma classe utilitária (--color-marca → bg-marca).
+   Mudou a cor da marca? Muda aqui, uma vez, e a aplicação inteira segue. */
+@theme {
+  --color-fundo: oklch(99% 0 0);
+  --color-superficie: oklch(100% 0 0);
+  --color-borda: oklch(92% 0.004 250);
+  --color-texto: oklch(24% 0.01 250);
+  --color-texto-suave: oklch(52% 0.012 250);
+  --color-marca: oklch(53% 0.16 250);
+  --color-marca-suave: oklch(96% 0.02 250);
+  --color-alerta: oklch(58% 0.16 40);
+
+  --radius-padrao: 0.625rem;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-fundo);
+    color: var(--color-texto);
+    font-family: var(--font-sans);
+  }
+}
