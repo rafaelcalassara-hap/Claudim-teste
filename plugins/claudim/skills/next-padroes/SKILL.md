@@ -5,10 +5,11 @@ description: Padrões obrigatórios de código Next.js neste stack — App Route
 
 # Next.js — como escrevemos aqui
 
-Um stack só: Next.js (App Router), React com Tailwind v4 e shadcn/ui, Clerk
-para sessão, Prisma sobre SQLite — o banco é o arquivo `prisma/dev.db`, dentro
-do projeto. Não discuta alternativa com o usuário, não instale framework novo,
-não troque de biblioteca de UI e não troque de banco.
+Um stack só: Next.js (App Router), React com Tailwind v4 e shadcn/ui,
+next-auth com a conta Google da empresa, Prisma sobre SQLite — o banco é o
+arquivo `prisma/dev.db`, dentro do projeto. Não discuta alternativa com o
+usuário, não instale framework novo, não troque de biblioteca de UI e não
+troque de banco.
 
 ## Estrutura
 
@@ -17,7 +18,9 @@ app/page.tsx        # a tela — Server Component
 app/acoes.ts        # server actions ("use server" no topo)
 app/globals.css     # tokens do tema, no bloco @theme
 prisma/dev.db       # o banco, um arquivo (fora do git)
-app/entrar/         # a única rota pública — login do Clerk
+auth.ts             # configuração do login (provider Google + allowlist)
+app/entrar/         # a tela de entrada — rota pública
+app/api/auth/       # o retorno do Google — a outra rota pública
 app/<rota>/page.tsx # telas extras
 components/         # componentes seus
 components/ui/      # primitivos do shadcn/ui
@@ -118,26 +121,32 @@ precisa chegar à tela em português.
 
 Toda aplicação deste plugin nasce fechada. Três camadas, e nenhuma é opcional:
 
-1. **`middleware.ts`** — só `/entrar(.*)` é pública. Toda outra rota passa por
-   `auth.protect()`.
+1. **`middleware.ts`** — só `/entrar` e `/api/auth` são públicas. Toda outra
+   rota redireciona para `/entrar` sem sessão.
 2. **`exigirSessao()`** em toda página e toda action, porque o middleware
    protege rota e action não é rota.
-3. **`EMAILS_PERMITIDOS`** no `.env` — a lista de quem entra.
+3. **`EMAILS_PERMITIDOS`** no `.env` — a lista de quem entra, conferida no
+   callback `signIn` do `auth.ts` (na hora de entrar) e de novo no
+   `exigirSessao()` (a cada requisição, para quem sai da lista perder o acesso
+   sem esperar o cookie vencer).
 
-A terceira é a que costuma faltar. Ter conta no Clerk não é ter acesso a esta
-aplicação: o Clerk autentica *qualquer* pessoa que se cadastrar. Quem autoriza
-é a lista. Lista vazia não libera geral — não libera ninguém.
+A terceira é a que costuma faltar. Ter conta Google não é ter acesso a esta
+aplicação. Quem autoriza é a lista. Lista vazia não libera geral — não libera
+ninguém. O parâmetro `hd` na tela do Google é só uma dica de qual conta usar:
+dá para tirar da URL e não protege nada sozinho.
 
 **Não existe tela de criar conta.** Acesso é concedido por quem criou a
 aplicação, editando `EMAILS_PERMITIDOS`, não pedido por um formulário público.
-Não recrie `/criar-conta`, não adicione `<SignUp />`, e não ponha rota nova no
-`publico` do middleware para "facilitar o teste".
+Não recrie `/criar-conta`, não adicione formulário de cadastro, e não ponha
+rota nova no `PUBLICO` do middleware para "facilitar o teste".
 
 **Senha nunca passa por este código.** Cadastro, troca e recuperação de senha
-são telas do Clerk. Não escreva tela de "esqueci minha senha", não crie tabela
-de usuário no `schema.prisma`, não guarde hash de senha, não gere token de
-recuperação e não mande e-mail. Se o pedido do `PLANO.md` parece exigir isso,
-o que ele quer é liberar mais gente — e isso é uma linha no `.env`.
+são da conta Google da empresa. Não adicione o provider `Credentials` do
+next-auth — é ele que traz a senha de volta para cá. Não escreva tela de
+"esqueci minha senha", não crie tabela de usuário no `schema.prisma`, não
+guarde hash de senha, não gere token de recuperação e não mande e-mail. Se o
+pedido do `PLANO.md` parece exigir isso, o que ele quer é liberar mais gente —
+e isso é uma linha no `.env`.
 
 ## Tailwind v4
 

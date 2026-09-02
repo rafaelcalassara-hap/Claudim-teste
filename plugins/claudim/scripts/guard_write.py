@@ -44,7 +44,7 @@ PADROES_SEGREDO = [
 PADROES_SEGREDO_INLINE = [
     (re.compile(r"postgres(ql)?://[^:\s]+:[^@\s]+@", re.I), "senha de banco na string de conexao"),
     (re.compile(r"\b(sk|rk)-[A-Za-z0-9_\-]{20,}"), "chave de API"),
-    (re.compile(r"\bsk_(live|test)_[A-Za-z0-9]{20,}"), "chave secreta do Clerk"),
+    (re.compile(r"\bGOCSPX-[A-Za-z0-9_-]{20,}"), "chave secreta do cliente OAuth do Google"),
     (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "chave de acesso AWS"),
     (re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}"), "token do GitHub"),
     (re.compile(r"\bEAA[A-Za-z0-9]{40,}"), "token da Meta/Facebook"),
@@ -55,7 +55,7 @@ PADROES_SEGREDO_INLINE = [
 # prefixo entra no JavaScript que vai para o navegador de quem abrir a pagina.
 RE_PUBLICO_COM_SEGREDO = re.compile(
     r"NEXT_PUBLIC_[A-Z0-9_]*(SECRET|PRIVATE|PASSWORD|SENHA|TOKEN|SERVICE_ROLE|"
-    r"DATABASE_URL|CLERK_SECRET)[A-Z0-9_]*", re.IGNORECASE
+    r"DATABASE_URL|AUTH_SECRET|AUTH_GOOGLE)[A-Z0-9_]*", re.IGNORECASE
 )
 
 
@@ -80,9 +80,10 @@ def checar_segredo(caminho: Path, conteudo: str) -> None:
             f"`{achado_publico.group(0)}` — tudo que comeca com `NEXT_PUBLIC_` e "
             "embutido no JavaScript enviado ao navegador. Qualquer pessoa que abrir a "
             "pagina le esse valor no DevTools; nao e configuracao, e publicacao.",
-            "Tire o prefixo (`CLERK_SECRET_KEY`, sem NEXT_PUBLIC_) e leia o valor em "
+            "Tire o prefixo (`AUTH_GOOGLE_SECRET`, sem NEXT_PUBLIC_) e leia o valor em "
             "arquivo de servidor — server component, server action ou `lib/`. "
-            "So identificador publico (chave `pk_`, id de pixel) pode levar o prefixo.",
+            "So identificador publico (id de pixel, por exemplo) pode levar o prefixo — "
+            "e este projeto nao tem nenhum.",
         )
 
     for padrao, rotulo in PADROES_SEGREDO_INLINE:

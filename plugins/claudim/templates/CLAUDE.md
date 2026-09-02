@@ -10,8 +10,9 @@
 
 ## Stack
 
-Next.js (App Router) · React + Tailwind v4 + shadcn/ui · Clerk para sessão ·
-Prisma + SQLite. Não troque, não adicione framework, não troque de banco.
+Next.js (App Router) · React + Tailwind v4 + shadcn/ui · next-auth com a conta
+Google da empresa · Prisma + SQLite. Não troque, não adicione framework, não
+troque de banco.
 
 O banco é o arquivo `prisma/dev.db`, dentro deste projeto: sem conta, sem
 servidor, sem senha, nada a preencher no `.env`. Ele não se conecta ao banco da
@@ -32,7 +33,8 @@ exportação.
 | `lib/dados-sinteticos.ts` | gerador de dado falso para exemplo e teste |
 | `prisma/schema.prisma` | as tabelas desta aplicação |
 | `prisma/dev.db` | o banco — um arquivo, fora do git |
-| `middleware.ts` | quais rotas exigem login (só `/entrar` é pública) |
+| `auth.ts` | configuração do login pelo Google + o callback que confere a lista |
+| `middleware.ts` | quais rotas exigem login (só `/entrar` e `/api/auth` são públicas) |
 | `PLANO.md` | o que está sendo construído e o que falta |
 | `.env` | segredos — nunca vai para o git |
 
@@ -56,7 +58,9 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
 - **Nada de tipo nativo no schema** (`@db.Decimal`, `@db.VarChar`): SQLite não
   tem, e o Prisma recusa o schema inteiro. Dinheiro é `Int` em centavos.
 - **Quem entra está em `EMAILS_PERMITIDOS`**, no `.env`. Não existe tela de
-  criar conta, e senha é do Clerk — esta aplicação nunca guarda uma.
+  criar conta: a conta é a do Google da empresa e esta aplicação nunca guarda
+  senha. A lista é conferida duas vezes — no `signIn` do `auth.ts` e no
+  `exigirSessao()`.
 - Toda página e toda server action chamam `exigirSessao()`. O middleware
   protege rotas; server action não é rota.
 - Toda entrada de server action passa por `zod` antes de virar efeito.

@@ -63,7 +63,7 @@ preencha os placeholders `{{...}}` com as respostas:
 | `package.json` | `{{SLUG_DO_PROJETO}}` — o nome em minúsculas, com hífen |
 | `app/layout.tsx`, `app/page.tsx` | título e subtítulo da aplicação |
 | `.env.example`, `.gitignore`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `components.json` | mantenha como estão |
-| `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/` | copie sem alterar |
+| `auth.ts`, `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/`, `app/api/` | copie sem alterar |
 
 Use `cp -R` para os arquivos que não mudam e Write só para os que têm
 placeholder.
@@ -118,8 +118,8 @@ conserte antes de dizer que terminou.
 
 O banco é um arquivo dentro do projeto — não existe conta, servidor nem senha,
 e não há nada a preencher no `.env` para ele. A aplicação também sobe sem exigir
-login enquanto as chaves do Clerk não estiverem no `.env`. Não peça conta de
-Clerk agora.
+login enquanto `AUTH_GOOGLE_ID` não estiver no `.env`. Não peça nada de Google
+agora.
 
 ## 7. Fechar com o usuário
 
@@ -134,13 +134,30 @@ Três linhas, sem lista de arquivos:
   aplicação precisa fazer."**
 
 Guarde para depois, sem falar agora: quando a aplicação precisar de login de
-verdade ou de dados de verdade, você pede as chaves do Clerk e a URL do banco,
-uma de cada vez, e escreve no `.env` junto com a pessoa.
+verdade, o login é a conta Google da empresa, e ligá-lo exige um cliente OAuth
+criado no Google Cloud Console. **Isso não é passo de marketing.** Quando o
+momento chegar, ofereça as duas saídas, nesta ordem:
 
-Quando esse momento chegar, `EMAILS_PERMITIDOS` é preenchido **na mesma hora**
-que as chaves do Clerk, começando pelo `email_criador` do `state.json` — a lista
-vazia não deixa ninguém entrar, e é assim de propósito. Diga também, em uma
-frase, que a instância do Clerk precisa ficar em "Restricted" no painel, senão
-qualquer pessoa com o endereço cria conta sozinha. Senha e recuperação de senha
-são do Clerk: esta aplicação nunca guarda senha, e você nunca escreve tela de
-"esqueci minha senha".
+1. Pedir ao time de TI um "cliente OAuth de Aplicativo da Web" para esta
+   aplicação, informando a URI de redirecionamento
+   `http://localhost:3000/api/auth/callback/google` (e a URL de produção, se já
+   existir). TI devolve `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`.
+2. Se a pessoa quiser fazer sozinha, conduza pelo Google Cloud Console um passo
+   por vez — APIs e Serviços → Credenciais → Criar credenciais → ID do cliente
+   OAuth → Aplicativo da Web — e confira o URI de redirecionamento antes de
+   fechar. Errar esse campo é o motivo nº 1 de o login não funcionar.
+
+`AUTH_SECRET` você gera com `npx auth secret`, sem perguntar nada a ninguém.
+
+`EMAILS_PERMITIDOS` é preenchido **na mesma hora** que as chaves, começando pelo
+`email_criador` do `state.json` — a lista vazia não deixa ninguém entrar, e é
+assim de propósito. Diga também, em uma frase, que estar logado no Google da
+empresa não basta: só entra quem está na lista. Senha e recuperação de senha são
+da conta Google — esta aplicação nunca guarda senha, e você nunca escreve tela
+de "esqueci minha senha".
+
+Ao publicar, a URL de produção precisa ser acrescentada nos URIs de
+redirecionamento do mesmo cliente OAuth, com o final
+`/api/auth/callback/google`. Sem isso o login funciona na máquina da pessoa e
+quebra no ar — e o erro que o Google mostra (`redirect_uri_mismatch`) não diz
+isso em português.

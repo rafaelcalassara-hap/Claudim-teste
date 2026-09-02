@@ -51,11 +51,12 @@ checar `bancoConfigurado()` — sem essa última, o primeiro clique em "Salvar"
 estoura erro de conexão e nada disso aparece no `tsc`.
 
 Acesso, tudo achado vermelho: rota nova no `publico` do `middleware.ts`;
-`/criar-conta`, `<SignUp />` ou qualquer formulário de autocadastro recriado;
+`/criar-conta` ou qualquer formulário de autocadastro recriado; provider
+`Credentials` no `auth.ts`; callback `signIn` sem `emailPermitido()`;
 `exigirSessao()` alterado para não consultar `EMAILS_PERMITIDOS`; tabela de
 usuário, coluna de senha ou token de recuperação no `schema.prisma`; código que
-manda e-mail de "esqueci minha senha". Senha é do Clerk — esta aplicação não
-guarda nenhuma. Confira também se o `.env.example` ainda traz
+manda e-mail de "esqueci minha senha". Senha é da conta Google — esta aplicação
+não guarda nenhuma. Confira também se o `.env.example` ainda traz
 `EMAILS_PERMITIDOS` e se o `.env` do projeto não está com a lista vazia.
 
 **7. Banco.** O banco é SQLite, arquivo `prisma/dev.db`. Achado vermelho: tipo

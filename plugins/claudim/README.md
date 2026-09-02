@@ -34,13 +34,16 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 - condição de saúde dentro de chamada de tracking/pixel/dataLayer
 
 **PreToolUse · Write/Edit** (`guard_auth.py`)
-- recriar tela de autocadastro: rota `criar-conta`/`sign-up`, `<SignUp />`
+- recriar tela de autocadastro: rota `criar-conta`/`sign-up`, formulário de
+  cadastro
 - coluna de senha, hash de senha (`bcrypt`, `argon2`) ou token de recuperação
-- biblioteca de e-mail junto de assunto de senha — o e-mail de recuperação é do
-  Clerk
-- outra biblioteca de sessão (`next-auth`, `better-auth`, `lucia`, `iron-session`)
-- rota nova no `createRouteMatcher` do `middleware.ts` — só `/entrar` é pública
-- `exigirSessao()` reescrito sem a checagem de `emailPermitido()`
+- biblioteca de e-mail junto de assunto de senha — o e-mail de recuperação é da
+  conta Google
+- outra biblioteca de sessão (`@clerk/*`, `better-auth`, `lucia`, `iron-session`)
+- provider `Credentials` do next-auth — é ele que traz a senha de volta para cá
+- rota nova no `PUBLICO` do `middleware.ts` — só `/entrar` e `/api/auth` são
+  públicas
+- `exigirSessao()` ou o callback `signIn` reescrito sem `emailPermitido()`
 
 **PreToolUse · Bash** (`guard_bash.py`)
 - `git push` para `main`/`master`, e push forçado
@@ -86,20 +89,24 @@ aplicação concede acesso editando uma linha do `.env`:
 EMAILS_PERMITIDOS=@empresa.com.br,pessoa@parceiro.com
 ```
 
-Três camadas: `middleware.ts` deixa pública só `/entrar`; `exigirSessao()` roda
-em toda página e toda action, porque action não é rota; e a lista acima decide
-quem passa. Ter conta no Clerk não é ter acesso — o Clerk autentica qualquer um
-que se cadastre, a lista é quem autoriza. **Lista vazia não libera ninguém**, de
-propósito: o erro caro aqui é a aplicação interna abrir para a internet.
+Três camadas: `middleware.ts` deixa públicas só `/entrar` e `/api/auth`;
+`exigirSessao()` roda em toda página e toda action, porque action não é rota; e
+a lista acima decide quem passa. Ter conta Google da empresa não é ter acesso —
+a lista é quem autoriza, e ela é conferida duas vezes: no callback `signIn`, na
+hora de entrar, e no `exigirSessao()`, a cada requisição, para quem sai da lista
+perder o acesso sem esperar o cookie vencer. **Lista vazia não libera ninguém**,
+de propósito: o erro caro aqui é a aplicação interna abrir para a internet.
 
-Senha, cadastro e recuperação são telas do Clerk. Esta aplicação nunca guarda
-senha, não tem tabela de usuário e não manda e-mail. A instância do Clerk fica
-em "Restricted" no painel — sem isso, autocadastro continua aberto.
+Senha, cadastro e recuperação são da conta Google. Esta aplicação nunca guarda
+senha, não tem tabela de usuário e não manda e-mail — a sessão é um cookie
+assinado, sem `adapter` e sem linha no banco. O parâmetro `hd` na tela do Google
+só sugere a conta da empresa; é a lista que barra, não ele.
 
 ## Stack fixo
 
-Next.js (App Router) · React + Tailwind v4 + shadcn/ui · Clerk para sessão ·
-Prisma + SQLite. O plugin não pergunta e não oferece alternativa.
+Next.js (App Router) · React + Tailwind v4 + shadcn/ui · next-auth com a conta
+Google da empresa · Prisma + SQLite. O plugin não pergunta e não oferece
+alternativa.
 
 Três consequências que valem dizer em voz alta:
 
@@ -127,8 +134,10 @@ login em produção, então isso não vira uma aplicação interna aberta na int
   — o hook bloqueia `vercel --prod` até lá. Quando existir, o SQLite não vai
   junto: serverless não guarda arquivo, então deploy significa migrar para
   Postgres, e o histórico do Prisma é por provider (é regerar, não repetir).
-- **Contas.** Quem provisiona o projeto no Clerk e como a pessoa recebe as
-  chaves. Dependência de infra. O banco saiu dessa lista: é arquivo.
+- **Contas.** Quem cria o cliente OAuth no Google Cloud Console e como a pessoa
+  recebe `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`. Dependência de infra, e a
+  maior do plugin hoje: o público-alvo não faz esse passo sozinho. O `/comecar`
+  manda pedir ao TI e explica o que pedir. O banco saiu dessa lista: é arquivo.
 - **Dado corporativo.** Hoje só por CSV exportado à mão. Quem exporta, com que
   frequência, e por onde o arquivo trafega.
 - **Suporte.** Quem responde quando o hook bloqueia e a pessoa não entende.
