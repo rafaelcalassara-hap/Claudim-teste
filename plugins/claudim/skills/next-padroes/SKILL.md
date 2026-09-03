@@ -142,37 +142,55 @@ o que ele quer é liberar mais gente — e isso é uma linha no `.env`.
 ## Tailwind v4
 
 O tema está em `app/globals.css`, no bloco `@theme` — **não existe
-`tailwind.config.js` neste projeto**. Token vira utilitário: `--color-marca`
-gera `bg-marca` e `text-marca`; `--radius-padrao` gera `rounded-padrao`.
+`tailwind.config.js` neste projeto**. Token vira utilitário: `--color-primary`
+gera `bg-primary` e `text-primary`; `--radius-lg` gera `rounded-lg`.
 
-- Cor nova, espaçamento novo: adicione um token no `@theme` e use o utilitário.
+- Cor nova, espaçamento novo: o token entra no `DESIGN.md` e o `@theme` é
+  regerado. Nunca direto no `globals.css` — ele é arquivo gerado (ver
+  **Design system**, abaixo).
 - Não escreva hex solto na classe (`bg-[#0055ff]`) nem CSS em arquivo à parte.
 - Não instale `tailwind.config.js`, plugin de tema, nem outra lib de CSS.
 
 ## Design system
 
-`docs/design-system/DESIGN.md` é a fonte da verdade dos valores. Ele tem a
-paleta, a tipografia, os raios, as sombras e a receita de cada componente, em
-YAML no topo do arquivo. **Leia antes de escrever tela ou componente.**
+**`docs/design-system/DESIGN.md` é a única fonte dos valores de tema.** Cor,
+tipografia, raio, sombra e espaçamento vivem lá, em YAML no topo do arquivo, e
+em nenhum outro lugar. Leia antes de escrever tela ou componente.
 
-O `@theme` do `globals.css` é o espelho dele com nomes em português — cada
-token traz o de-para em comentário (`--color-marca` ↔ `DS --primary`). Os dois
-andam juntos: mudou um, muda o outro no mesmo passo.
+O `app/globals.css` é **gerado** dele:
 
-- Precisa de uma cor que já existe no DS? Use o token que a espelha. Não
-  crie um segundo token para a mesma cor.
-- Precisa de uma cor que **não** existe no DS? Não invente no `globals.css`.
-  Diga ao usuário qual valor falta e por quê — o DS é decisão de design, não
-  de implementação.
-- `bg-marca` para identidade, `bg-acao` para o botão que a pessoa deve clicar.
-  Errar isso deixa a tela com dois primários brigando.
+```
+python3 docs/design-system/gerar-tema.py
+```
+
+- **Não edite o `globals.css` à mão.** A próxima execução do gerador
+  sobrescreve, e a checagem acusa antes disso.
+- O nome da utilitária é o nome do token, sem tradução no meio:
+  `--color-primary` gera `bg-primary`, `--radius-lg` gera `rounded-lg`,
+  `--shadow-sm` gera `shadow-sm`. Não existe um segundo vocabulário.
+- Cor que **não** existe no DS: não invente token nem classe. Diga ao usuário
+  qual valor falta e por quê — tema é decisão de design, não de implementação.
+- `bg-primary` para identidade, `bg-accent` para o botão que a pessoa deve
+  clicar. Errar isso deixa a tela com dois primários brigando.
 - Estado nunca é só cor. Vermelho sem ícone e sem rótulo não passa em
   daltonismo — combine cor com texto ou ícone, sempre.
-- Contraste mínimo 4,5:1 para texto. Sobre `bg-marca` e `bg-acao`, texto
-  branco. Sobre `bg-aviso` e `bg-destaque`, texto escuro (`text-texto`).
+- Contraste mínimo 4,5:1 para texto. Sobre `bg-primary` e `bg-accent`, use
+  `text-primary-foreground` / `text-accent-foreground`. Sobre `bg-warning` e
+  `bg-highlight`, texto escuro (`text-foreground`).
 
-`DS-ACME.md`, na mesma pasta, tem a anatomia de cada componente em prosa —
-consulte quando a dúvida for *como montar*, não *qual valor usar*.
+Antes de fechar o passo, rode a checagem:
+
+```
+python3 docs/design-system/gerar-tema.py --checar
+```
+
+Ela falha se o `globals.css` divergiu do `DESIGN.md` ou se algum `.tsx` usa
+classe de tema sem token — `bg-azul`, `bg-blue-600`. É assim que nasce uma
+segunda paleta.
+
+`DS-ACME.md`, na mesma pasta, tem a anatomia de cada componente em prosa.
+Consulte quando a dúvida for *como montar*, não *qual valor usar* — ele cita
+token por nome e não repete valor, de propósito.
 
 ## shadcn/ui
 

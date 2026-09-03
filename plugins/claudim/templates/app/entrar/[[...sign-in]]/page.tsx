@@ -4,7 +4,7 @@ import { clerkConfigurado } from "@/lib/config";
 export default function Pagina() {
   if (!clerkConfigurado()) {
     return (
-      <p className="rounded-padrao border border-borda p-6 text-center text-texto-suave">
+      <p className="rounded-lg border border-border-muted p-6 text-center text-muted-foreground">
         O login ainda não foi configurado neste projeto.
       </p>
     );
@@ -13,7 +13,7 @@ export default function Pagina() {
     <div className="flex flex-col items-center gap-4 py-12">
       <SignIn />
       {/* Não existe tela de criar conta: acesso é concedido, não solicitado. */}
-      <p className="text-sm text-texto-suave">
+      <p className="text-sm text-muted-foreground">
         Não consegue entrar? Peça acesso a quem criou esta aplicação.
       </p>
     </div>

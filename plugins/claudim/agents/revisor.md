@@ -69,15 +69,17 @@ enxerga o próprio arquivo.
 estado vazio, `dangerouslySetInnerHTML` com dado do banco, `any` calando erro
 de tipo, `useEffect` buscando dado da própria aplicação.
 
-**9. Design system.** Compare `docs/design-system/DESIGN.md` com o que o código
-usa. Achado vermelho: hex solto na classe (`bg-[#0055ff]`), cor arbitrária do
-Tailwind (`bg-blue-600`, `text-gray-500`), CSS em arquivo à parte, ou token
-novo no `@theme` do `globals.css` com valor que não existe no DESIGN.md — é
-assim que nasce uma segunda paleta. Achado amarelo: `bg-marca` usado no botão
-de ação onde o DS pede `bg-acao`, estado sinalizado só por cor sem ícone nem
-rótulo, e texto claro sobre `bg-aviso` ou `bg-destaque`, que reprova contraste.
-Um token do `globals.css` que perdeu o par no DESIGN.md conta aqui também: os
-dois andam juntos.
+**9. Design system.** Rode
+`python3 docs/design-system/gerar-tema.py --checar` e reporte o que ele
+apontar: derivado editado à mão que não corresponde mais ao `DESIGN.md`, ou
+`.tsx` usando classe de tema sem token. Ele sai com 1 e nomeia arquivo e
+classe. Achado vermelho também para hex solto (`bg-[#0055ff]`), cor arbitrária
+do Tailwind (`bg-blue-600`, `text-gray-500`) e CSS em arquivo à parte. Achado
+amarelo: `bg-primary` no botão de ação onde o DS pede `bg-accent`, estado
+sinalizado só por cor sem ícone nem rótulo, e texto claro sobre `bg-warning`
+ou `bg-highlight`, que reprova contraste. Se a checagem passar limpa, não
+transforme preferência de paleta em achado — o valor é decisão de design, e
+está no `DESIGN.md` por escolha de alguém.
 
 ## Como reportar
 

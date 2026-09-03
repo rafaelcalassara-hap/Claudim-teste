@@ -6,13 +6,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const botao = cva(
-  "inline-flex items-center justify-center gap-2 rounded-padrao text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca",
+  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
   {
     variants: {
       variant: {
-        default: "bg-marca text-white hover:opacity-90",
-        outline: "border border-borda bg-superficie hover:bg-marca-suave",
-        ghost: "hover:bg-marca-suave",
+        default: "bg-primary text-primary-foreground hover:opacity-90",
+        outline: "border border-border-muted bg-card hover:bg-soft",
+        ghost: "hover:bg-soft",
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -22,8 +22,8 @@ exportação.
 |---|---|
 | `app/page.tsx` | a tela (Server Component: busca no servidor) |
 | `app/acoes.ts` | server actions — zod valida, depois checa a sessão |
-| `app/globals.css` | tokens de tema do Tailwind v4, no bloco `@theme` — espelho do design system |
-| `docs/design-system/` | o design system: `DESIGN.md` tem os valores, `DS-ACME.md` a anatomia |
+| `app/globals.css` | **gerado** do design system — não edite à mão |
+| `docs/design-system/` | o design system. `DESIGN.md` é a **única** fonte dos valores de tema |
 | `components/` | componentes React seus |
 | `components/ui/` | primitivos do shadcn/ui (`npx shadcn@latest add ...`) |
 | `lib/config.ts` | login configurado no `.env` + quem pode entrar |
@@ -70,6 +70,8 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
   `"use client"`. O que vai por prop, vai inteiro no payload da página.
 - Toda consulta de lista tem `take` (teto de linhas).
 - Erro na tela em português, sem stack trace.
-- **Cor, raio e sombra saem de `docs/design-system/DESIGN.md`** — nunca de hex
-  na classe nem de cor arbitrária do Tailwind. O `@theme` do `globals.css` é o
-  espelho dele; os dois mudam no mesmo passo.
+- **Cor, raio, sombra e espaçamento saem de `docs/design-system/DESIGN.md`**,
+  e de nenhum outro lugar. O `app/globals.css` é gerado por
+  `python3 docs/design-system/gerar-tema.py` — editá-lo à mão é trabalho
+  perdido na próxima execução. Nunca hex na classe, nunca cor arbitrária do
+  Tailwind. `python3 docs/design-system/gerar-tema.py --checar` verifica.

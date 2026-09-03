@@ -20,15 +20,17 @@ instalou. É esse o motivo de ser plugin e não template repo.
 
 ## Design system
 
-O `claudim` nasce com um design system em dois arquivos — um para agente ler,
-outro para pessoa ler — e o tema do Tailwind é o espelho dele. A referência do
-padrão está em [`ds-acme/`](./ds-acme/), com um showcase HTML dos tokens e
-componentes. A marca é fictícia e existe para ser trocada pela da empresa.
+O `claudim` nasce com um design system em
+[`plugins/claudim/templates/docs/design-system/`](./plugins/claudim/templates/docs/design-system/):
+`DESIGN.md` é a única fonte dos valores de tema, e o `@theme` do Tailwind e o
+showcase HTML são gerados dele. Um gate no plugin reprova classe de tema sem
+token. A marca é fictícia e existe para ser trocada pela da empresa.
 
 ## Antes de publicar uma versão
 
 ```
 python3 testar_hooks.py
+cd plugins/claudim/templates && python3 docs/design-system/gerar-tema.py --checar
 ```
 
 49 casos cobrindo bloqueio de segredo, `NEXT_PUBLIC_` com segredo, PII,

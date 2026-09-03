@@ -12,7 +12,7 @@ function Moldura({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className="min-h-screen">
-        <header className="flex items-center justify-between border-b border-borda px-6 py-3">
+        <header className="flex items-center justify-between border-b border-border-muted px-6 py-3">
           <span className="font-semibold">{"{{NOME_DO_PROJETO}}"}</span>
           {clerkConfigurado() && (
             <SignedIn>

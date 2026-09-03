@@ -30,6 +30,12 @@ colors:
     destructive: '#DC2626'
     destructive-foreground: '#FFFFFF'
     warning: '#F59E0B'
+  chart:
+    chart-1: 'oklch(0.45 0.18 250)'
+    chart-2: 'oklch(0.58 0.16 165)'
+    chart-3: 'oklch(0.65 0.2 45)'
+    chart-4: 'oklch(0.55 0.22 300)'
+    chart-5: 'oklch(0.65 0.2 16)'
   line:
     border: '#8D0000'
     border-muted: '#ACACAC'
@@ -121,6 +127,11 @@ components:
 
 # Acme Design System V2 — DESIGN.md
 
+> O **front matter YAML no topo deste arquivo é a única fonte dos valores** de
+> tema. O corpo abaixo documenta uso e cita token por nome. `gerar-tema.py` lê
+> o front matter e escreve `app/globals.css` e `showcase.html` — não edite os
+> derivados à mão.
+
 > **Human-readable reference**: see [`DS-ACME.md`](./DS-ACME.md) for full prose, illustrations, and usage rationale.
 > **Live tokens**: `apps/site/src/app/global.css`
 > **Storybook**: `npm run storybook` → `http://localhost:6006`
@@ -131,7 +142,7 @@ components:
 
 Acme React is an enterprise SPA. The DS is built on four core principles:
 
-- **Acolhimento e confiança** — humanized communication; illustration style: brand primary (#8D0000) or white, rounded strokes following the brand symbol shape.
+- **Acolhimento e confiança** — humanized communication; illustration style: `--primary` or `--background`, rounded strokes following the brand symbol shape.
 - **Accessibility first** — minimum WCAG AA contrast (4.5:1). Color is never the sole state indicator.
 - **Mobile-first** — four fixed breakpoints: 320 / 720 / 1400 / 1920 px.
 - **Token-based** — every visual value flows through a CSS custom property in `:root`. Never use hex literals in components.
@@ -143,58 +154,58 @@ Acme React is an enterprise SPA. The DS is built on four core principles:
 
 ### Brand
 
-| CSS Token          | Hex       | Tailwind     | Usage                               |
-| ------------------ | --------- | ------------ | ----------------------------------- |
-| `--primary`        | `#8D0000` | `bg-primary` | Core brand (primary)           |
-| `--primary-darker` | `#4D1D00` | —            | Hover/pressed state on primary      |
-| `--accent`         | `#009E90` | `bg-accent`  | Primary CTA, accent highlight         |
-| `--highlight`      | `#4EE0FF` | —            | Short highlights (badges, pills)    |
-| `--soft`           | `#E3F6F6` | —            | Soft background for accent sections |
+| CSS Token | Tailwind | Usage |
+| ------------------ | ------------ | ----------------------------------- |
+| `--primary` | `bg-primary` | Core brand (primary) |
+| `--primary-darker` | — | Hover/pressed state on primary |
+| `--accent` | `bg-accent` | Primary CTA, accent highlight |
+| `--highlight` | — | Short highlights (badges, pills) |
+| `--soft` | — | Soft background for accent sections |
 
 ### Surfaces
 
-| CSS Token            | Hex                  | Tailwind                | Usage                            |
-| -------------------- | -------------------- | ----------------------- | -------------------------------- |
-| `--background`       | `#FFFFFF`            | `bg-background`         | Default page background          |
-| `--foreground`       | `#2D2D2D`            | `text-foreground`       | Default text                     |
-| `--card`             | `#FFFFFF`            | `bg-card`               | Card background                  |
-| `--secondary`        | `#F5F5F5`            | `bg-secondary`          | Alternate section background     |
-| `--muted`            | `#F5F5F5`            | `bg-muted`              | Disabled state, muted background |
-| `--muted-foreground` | `rgba(45, 45, 45,0.6)` | `text-muted-foreground` | Helper text, secondary labels    |
+| CSS Token | Tailwind | Usage |
+| -------------------- | ----------------------- | -------------------------------- |
+| `--background` | `bg-background` | Default page background |
+| `--foreground` | `text-foreground` | Default text |
+| `--card` | `bg-card` | Card background |
+| `--secondary` | `bg-secondary` | Alternate section background |
+| `--muted` | `bg-muted` | Disabled state, muted background |
+| `--muted-foreground` | `text-muted-foreground` | Helper text, secondary labels |
 
 ### Status
 
-| CSS Token       | Hex       | Usage                                                           |
-| --------------- | --------- | --------------------------------------------------------------- |
-| `--success`     | `#16A34A` | Success states, completed upload                                |
-| `--destructive` | `#DC2626` | Errors, destructive actions                                     |
-| `--warning`     | `#F59E0B` | Attention inline alerts; Quick Access cards at 10% opacity only |
+| CSS Token | Usage |
+| --------------- | --------------------------------------------------------------- |
+| `--success` | Success states, completed upload |
+| `--destructive` | Errors, destructive actions |
+| `--warning` | Attention inline alerts; Quick Access cards at 10% opacity only |
 
 ### Lines / Focus
 
-| CSS Token        | Hex       | Usage                                 |
-| ---------------- | --------- | ------------------------------------- |
-| `--border`       | `#8D0000` | Default border (aligned with primary) |
-| `--border-muted` | `#ACACAC` | Disabled field borders                |
-| `--input`        | `#ACACAC` | Default input border                  |
-| `--ring`         | `#F1D0C5` | Accessible focus halo                 |
+| CSS Token | Usage |
+| ---------------- | ------------------------------------- |
+| `--border` | Default border (aligned with primary) |
+| `--border-muted` | Disabled field borders |
+| `--input` | Default input border |
+| `--ring` | Accessible focus halo |
 
 ### Data Visualization (data palette)
 
 Five-hue categorical palette for charts, multi-state badges and any data viz
 where the six semantic Status/Surface tokens are insufficient. Defined as
-`oklch()` in `packages/tokens/src/tokens-internal.css` (light + `.dark`)
+`oklch()`, declared in the `DESIGN.md` front matter and emitted to the `@theme`
 and exposed in each portal `@theme` as `--color-chart-N` → `bg-chart-N` /
 `text-chart-N` / `border-chart-N`. Pair with a non-color cue (icon + label)
 whenever used as a state indicator — color is never the sole signal.
 
-| CSS Token   | Light (oklch)          | Dark (oklch)           | Tailwind     | Hue family                  |
-| ----------- | ---------------------- | ---------------------- | ------------ | --------------------------- |
-| `--chart-1` | `oklch(0.45 0.18 250)` | `oklch(0.6 0.2 250)`   | `bg-chart-1` | Blue (brand-adjacent)       |
-| `--chart-2` | `oklch(0.58 0.16 165)` | `oklch(0.65 0.17 165)` | `bg-chart-2` | Green (success family)      |
-| `--chart-3` | `oklch(0.65 0.2 45)`   | `oklch(0.72 0.19 70)`  | `bg-chart-3` | Orange (attention family)   |
-| `--chart-4` | `oklch(0.55 0.22 300)` | `oklch(0.65 0.25 300)` | `bg-chart-4` | Violet (special transition) |
-| `--chart-5` | `oklch(0.65 0.2 16)`   | `oklch(0.65 0.24 16)`  | `bg-chart-5` | Red-orange (soft-negative)  |
+| CSS Token | Tailwind | Hue family |
+| ----------- | ------------ | --------------------------- |
+| `--chart-1` | `bg-chart-1` | Blue (brand-adjacent) |
+| `--chart-2` | `bg-chart-2` | Green (success family) |
+| `--chart-3` | `bg-chart-3` | Orange (attention family) |
+| `--chart-4` | `bg-chart-4` | Violet (special transition) |
+| `--chart-5` | `bg-chart-5` | Red-orange (soft-negative) |
 
 ---
 
@@ -283,24 +294,24 @@ Minimum body size: 14 px. Minimum metadata size: 12 px. Never below 12 px. Tap t
 
 All shadows use **navy at 20% opacity** — never pure black shadows.
 
-| Token            | Value                            | Usage                               |
-| ---------------- | -------------------------------- | ----------------------------------- |
-| `--shadow-sm`    | `0 3px 6px rgba(141, 0, 0,0.20)`  | Cards, smaller components           |
-| `--shadow-lg`    | `0 6px 12px rgba(141, 0, 0,0.20)` | Larger components, hover state      |
-| `--shadow-focus` | `0 0 0 3px #F1D0C5`              | Accessible focus ring on inputs/CTA |
-| Overlay          | `rgba(0, 0, 0,0.80)`               | Modals, drawers, lightbox           |
+| Token | Usage |
+| ---------------- | ----------------------------------- |
+| `--shadow-sm` | Cards, smaller components |
+| `--shadow-lg` | Larger components, hover state |
+| `--shadow-focus` | Accessible focus ring on inputs/CTA |
+| `--color-overlay` | Modals, drawers, lightbox |
 
 ---
 
 ## Shapes
 
-| Token             | Value                  | Usage                  |
-| ----------------- | ---------------------- | ---------------------- |
-| `--radius` (base) | 6 px                   | Buttons, inputs, cards |
-| `--radius-sm`     | 2 px (`radius - 4px`)  | Small badges           |
-| `--radius-md`     | 4 px (`radius - 2px`)  | Medium elements        |
-| `--radius-lg`     | 6 px (`radius`)        | Standard               |
-| `--radius-xl`     | 10 px (`radius + 4px`) | Modal corners          |
+| Token | Usage |
+| ----------------- | ---------------------- |
+| `--radius` (base) | Buttons, inputs, cards |
+| `--radius-sm` | Small badges |
+| `--radius-md` | Medium elements |
+| `--radius-lg` | Standard |
+| `--radius-xl` | Modal corners |
 
 ---
 
@@ -476,11 +487,12 @@ Primitiva: `packages/ui/src/lib/alert.tsx`
 
 ### Don't
 
-- ❌ `bg-[#8D0000]` — use `bg-primary`.
-- ❌ `shadow: 0 3px 6px rgba(0, 0, 0,0.2)` — all shadows use **navy 20%**.
+- ❌ `bg-[#0055ff]` — use the token: `bg-primary`.
+- ❌ A hand-written `box-shadow` — use `shadow-sm` / `shadow-lg`; every shadow
+  in the system is derived from `--primary`.
 - ❌ Animate `width`, `height`, `top`, `left` — layout thrashing.
 - ❌ Combine Brand Display in long body text.
-- ❌ Use `#F59E0B` at full opacity — only at 10% for Quick Access / Step-by-Step cards.
+- ❌ Use `--warning` at full opacity — only at 10% for Quick Access / Step-by-Step cards.
 - ❌ Banner vertical on mobile.
 - ❌ Edit files in `packages/ui` inline — extend via composition in `packages/layout` or features.
 - ❌ `any` type — use `unknown` + type guards.

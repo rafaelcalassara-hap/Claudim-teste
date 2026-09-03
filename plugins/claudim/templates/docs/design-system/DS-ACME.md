@@ -1,5 +1,11 @@
 # DS Acme V2 — Design System
 
+> Este arquivo explica **como usar**. Os valores — hex, px, sombra, família —
+> vivem só em [`DESIGN.md`](./DESIGN.md), e de lá o
+> [`gerar-tema.py`](./gerar-tema.py) escreve o `@theme` do Tailwind e o
+> `showcase.html`. Aqui os tokens aparecem por **nome**, nunca por valor:
+> valor repetido em dois arquivos é valor que vai divergir.
+
 Documento de referência consolidado a partir do documento de design de origem e dos tokens já implementados em `apps/site/src/app/global.css`.
 
 > **Stack alvo:** Next.js 16 (App Router) + TypeScript estrito + Tailwind CSS + shadcn/ui + Radix. Tokens são expostos como CSS Custom Properties em `:root` e mapeados via `@theme inline` para uso direto em utilitários Tailwind (`bg-primary`, `text-foreground`, `shadow-sm`, etc.).
@@ -94,25 +100,23 @@ Implementação: classe `.ds-grid` aplica `gap` correspondente.
 
 ### 2.4 Overlay
 
-- Cor: `#000000` (token `--color-high-contrast`)
-- Opacidade: **80%**
+- Token: `--color-overlay` (preto a 80%; o valor está no `DESIGN.md`)
 - Uso: modais, drawers, lightbox.
 
 ### 2.5 Sombras
 
 A paleta oficial usa **navy 20%** (não preto puro) — define a sensação de marca:
 
-| Token CSS        | Valor                               | Uso                          |
-| ---------------- | ----------------------------------- | ---------------------------- |
-| `--shadow-sm`    | `0 3px 6px rgba(141, 0, 0, 0.20)`  | Cards comuns e menores       |
-| `--shadow-lg`    | `0 6px 12px rgba(141, 0, 0, 0.20)` | Componentes maiores / hover  |
-| `--shadow-focus` | `0 0 0 3px #F1D0C5`                 | Foco de inputs/CTA acessível |
+| Token CSS | Uso |
+| ---------------- | ---------------------------- |
+| `--shadow-sm` | Cards comuns e menores |
+| `--shadow-lg` | Componentes maiores / hover |
+| `--shadow-focus` | Foco de inputs/CTA acessível |
 
 ### 2.6 Raio (border radius)
 
 | Token         | Valor                       |
 | ------------- | --------------------------- |
-| `--radius`    | **6 px** (base)             |
 | `--radius-sm` | `calc(var(--radius) - 4px)` |
 | `--radius-md` | `calc(var(--radius) - 2px)` |
 | `--radius-lg` | `var(--radius)`             |
@@ -126,51 +130,51 @@ Todos os tokens vivem em `:root` e são consumidos pelo Tailwind via `@theme inl
 
 ### Brand
 
-| Token CSS              | Hex       | Tailwind                  | Uso                                 |
-| ---------------------- | --------- | ------------------------- | ----------------------------------- |
-| `--primary`            | `#8D0000` | `bg-primary`              | Marca principal (cor primária)      |
-| `--primary-darker`     | `#4D1D00` | n/a (manual)              | Hover/estado pressionado em primary |
-| `--primary-foreground` | `#FFFFFF` | `text-primary-foreground` | Texto sobre primary                 |
-| `--accent`             | `#009E90` | `bg-accent`               | CTA secundário, destaques de apoio   |
-| `--accent-foreground`  | `#FFFFFF` | `text-accent-foreground`  | Texto sobre accent                  |
-| `--highlight`          | `#4EE0FF` | n/a                       | Realces curtos (badges, pílulas)    |
-| `--soft`               | `#E3F6F6` | n/a                       | Fundo suave de seções com accent    |
+| Token CSS | Tailwind | Uso |
+| ---------------------- | ------------------------- | ----------------------------------- |
+| `--primary` | `bg-primary` | Marca principal (cor primária) |
+| `--primary-darker` | n/a (manual) | Hover/estado pressionado em primary |
+| `--primary-foreground` | `text-primary-foreground` | Texto sobre primary |
+| `--accent` | `bg-accent` | CTA secundário, destaques de apoio |
+| `--accent-foreground` | `text-accent-foreground` | Texto sobre accent |
+| `--highlight` | n/a | Realces curtos (badges, pílulas) |
+| `--soft` | n/a | Fundo suave de seções com accent |
 
 ### Surfaces
 
-| Token CSS            | Hex                 | Tailwind                | Uso                        |
-| -------------------- | ------------------- | ----------------------- | -------------------------- |
-| `--background`       | `#FFFFFF`           | `bg-background`         | Fundo padrão               |
-| `--foreground`       | `#2D2D2D`           | `text-foreground`       | Texto padrão               |
-| `--card`             | `#FFFFFF`           | `bg-card`               | Fundo de cards             |
-| `--card-foreground`  | `#2D2D2D`           | `text-card-foreground`  | Texto em cards             |
-| `--popover`          | `#FFFFFF`           | `bg-popover`            | Fundo de popover/dropdown  |
-| `--secondary`        | `#F5F5F5`           | `bg-secondary`          | Fundo alternativo de seção |
-| `--muted`            | `#F5F5F5`           | `bg-muted`              | Estado desabilitado, fundo |
-| `--muted-foreground` | `rgba(45, 45, 45,.6)` | `text-muted-foreground` | Texto secundário, helper   |
+| Token CSS | Tailwind | Uso |
+| -------------------- | ----------------------- | -------------------------- |
+| `--background` | `bg-background` | Fundo padrão |
+| `--foreground` | `text-foreground` | Texto padrão |
+| `--card` | `bg-card` | Fundo de cards |
+| `--card-foreground` | `text-card-foreground` | Texto em cards |
+| `--popover` | `bg-popover` | Fundo de popover/dropdown |
+| `--secondary` | `bg-secondary` | Fundo alternativo de seção |
+| `--muted` | `bg-muted` | Estado desabilitado, fundo |
+| `--muted-foreground` | `text-muted-foreground` | Texto secundário, helper |
 
 ### Linhas, foco e inputs
 
-| Token CSS        | Hex       | Uso                                 |
-| ---------------- | --------- | ----------------------------------- |
-| `--border`       | `#8D0000` | Borda padrão (alinhada a `primary`) |
-| `--border-muted` | `#ACACAC` | Bordas de campos desabilitados      |
-| `--input`        | `#ACACAC` | Borda padrão de inputs              |
-| `--ring`         | `#F1D0C5` | Halo de foco acessível              |
+| Token CSS | Uso |
+| ---------------- | ----------------------------------- |
+| `--border` | Borda padrão (alinhada a `primary`) |
+| `--border-muted` | Bordas de campos desabilitados |
+| `--input` | Borda padrão de inputs |
+| `--ring` | Halo de foco acessível |
 
 ### Status
 
-| Token CSS                  | Hex       | Tailwind                      | Uso                                                     |
-| -------------------------- | --------- | ----------------------------- | ------------------------------------------------------- |
-| `--success`                | `#16A34A` | n/a (`bg-[var(--success)]`)   | Sucesso, upload concluído                               |
-| `--destructive`            | `#DC2626` | `bg-destructive`              | Erros, ações destrutivas                                |
-| `--destructive-foreground` | `#FFFFFF` | `text-destructive-foreground` | Texto sobre destructive                                 |
-| `--warning`                | `#F59E0B` | n/a                           | Atenção / cards de “Atalhos” a 10% de opacidade |
+| Token CSS | Tailwind | Uso |
+| -------------------------- | ----------------------------- | ------------------------------------------------------- |
+| `--success` | n/a (`bg-[var(--success)]`) | Sucesso, upload concluído |
+| `--destructive` | `bg-destructive` | Erros, ações destrutivas |
+| `--destructive-foreground` | `text-destructive-foreground` | Texto sobre destructive |
+| `--warning` | n/a | Atenção / cards de “Atalhos” a 10% de opacidade |
 
 ### Cores reservadas (PDF)
 
-- `#F59E0B` — exclusivo para **Cards de Atalhos** (sempre a 10% de opacidade) e **Cards de Passo a Passo**.
-- `#FFFFFF` e `#F5F5F5` — únicas opções para fundo de **banners intermediários, cards textuais, cards de serviços, cards de unidades e formulários**.
+- `--warning` — exclusivo para **Cards de Atalhos** (sempre a 10% de opacidade) e **Cards de Passo a Passo**.
+- `--background` e `--secondary` — únicas opções para fundo de **banners intermediários, cards textuais, cards de serviços, cards de unidades e formulários**.
 
 > **Aviso de contraste:** o contraste entre as duas cores de destaque da marca (`--highlight` e `--accent`) é alto, mas evite combiná-los — perde legibilidade para daltônicos. Mínimo WCAG = **4.5 : 1**. Se não for possível, use **negrito** ou outro reforço visual.
 
@@ -182,8 +186,8 @@ Duas famílias oficiais, ambas injetadas via `next/font/local` em `packages/font
 
 | Família     | Variável                            | Tailwind                        | Quando usar                                                               |
 | ----------- | ----------------------------------- | ------------------------------- | ------------------------------------------------------------------------- |
-| **Brand Display** | `--font-brand-display` (`--font-display`) | `font-display`, `.font-display` | Títulos criativos, banners, destaques. **Nunca** em corpo de texto longo. |
-| **Inter**  | `--font-inter` (`--font-sans`)     | `font-sans` (default)           | Títulos comuns, corpo de texto, subtítulos de banners, formulários.       |
+| **Brand Display** | `--font-display` | `font-display`, `.font-display` | Títulos criativos, banners, destaques. **Nunca** em corpo de texto longo. |
+| **Inter**  | `--font-sans` | `font-sans` (default)           | Títulos comuns, corpo de texto, subtítulos de banners, formulários.       |
 
 `.font-display` aplica `font-weight: 700` e `letter-spacing: -0.01em`.
 
@@ -234,7 +238,7 @@ Regras complementares:
 - **Implementação no projeto:** `lucide-react` (alinhado ao shadcn).
 - **Tamanhos:** 16 (inline em texto small), **20** (botões/inputs), **24** (default), **32+** (decorativo).
 - **Cor:** herda do texto (`text-primary`, `text-muted-foreground`). Para ícones decorativos use `aria-hidden="true"`.
-- **Ilustrações:** somente nas cores **primária (`#8D0000`) ou branco (`#FFFFFF`)**; traçado próximo, humanizado, com retas/curvas seguindo a forma do símbolo da marca.
+- **Ilustrações:** somente nas cores **`--primary` ou `--background`**; traçado próximo, humanizado, com retas/curvas seguindo a forma do símbolo da marca.
 
 ---
 
@@ -277,20 +281,20 @@ Mobile colapsa em accordion (Serviços, Atalhos, Atendimento) com endereço + co
 
 ### 7.4 Banner intermediário
 
-- Backgrounds permitidos: `#FFFFFF` ou `#F5F5F5`.
+- Backgrounds permitidos: `--background` ou `--secondary`.
 - Layout 2 colunas em desktop / tablet (imagem + texto), empilhado em mobile.
 - Botão primário centralizado abaixo do texto.
 
 ### 7.5 Banner vertical
 
-- Backgrounds permitidos: `#FFFFFF` ou `#F5F5F5`.
+- Backgrounds permitidos: `--background` ou `--secondary`.
 - Disponível apenas em **Desktop** e **Tablet** — mobile **NÃO** utiliza banner vertical.
 
 ### 7.6 Buttons
 
 | Variante              | Estado | Estilo                                                         |
 | --------------------- | ------ | -------------------------------------------------------------- |
-| **Primary (default)** | rest   | `bg-accent text-accent-foreground` (accent Acme `#009E90`) |
+| **Primary (default)** | rest   | `bg-accent text-accent-foreground` (`--accent`) |
 | Primary               | hover  | escurecer 10% (`brightness-95`) + `shadow-lg`                  |
 | **Secondary**         | rest   | `border border-primary text-primary bg-transparent`            |
 | Secondary             | hover  | `bg-primary text-primary-foreground`                           |
@@ -330,7 +334,7 @@ estados independentes da posição no slider.
 
 ### 7.9 Cards textuais
 
-- Backgrounds: `#FFFFFF` ou `#F5F5F5`.
+- Backgrounds: `--background` ou `--secondary`.
 - Estrutura: título (Inter 700) + parágrafo + CTA (botão ou link).
 - Apresentação:
   - Desktop: até **3 cards por linha**.
@@ -339,20 +343,20 @@ estados independentes da posição no slider.
 
 ### 7.10 Cards de Serviços
 
-- Backgrounds: `#FFFFFF` ou `#F5F5F5`.
+- Backgrounds: `--background` ou `--secondary`.
 - **Desktop 1400’**: até **3 cards por página** (apresentados ao lado do banner vertical).
 - **Tablet 720’**: até **3 cards por página** com chevron link `Clique aqui >`.
 - **Mobile 320’**: cards empilháveis, máximo **4 cards**.
 
 ### 7.11 Cards de Atalhos
 
-- Background: `#F59E0B` a **10% de opacidade** (`bg-warning/10` ou `rgba(245, 158, 11,0.1)`).
+- Background: `--warning` a **10% de opacidade** (`bg-warning/10`).
 - Mesma regra de quantidade dos cards de serviços (3 por página em desktop/tablet, empilhados em mobile).
 - CTA padrão: `Consulte a rede >`.
 
 ### 7.12 Cards de Unidades
 
-- Background: `#FFFFFF`.
+- Background: `--background`.
 - Estrutura: badge de distância (“{distância} km de você”), nome da unidade, endereço, telefone, link `Ver unidade`.
 - Apresentação: **9 cards/página** (desktop), **4 cards/página** (tablet), empilhado em mobile.
 
@@ -360,7 +364,7 @@ estados independentes da posição no slider.
 
 Variante padrão (com banner intermediário “Saiba como enviar o formulário”):
 
-- Backgrounds permitidos: `#FFFFFF`, `#F5F5F5` ou `#F59E0B - 10%` (apenas variante de formulários).
+- Backgrounds permitidos: `--background`, `--secondary` ou `--warning` a 10% (apenas variante de formulários).
 - Estrutura por etapa: título + descrição + ícone numerado.
 - Em mobile vira lista vertical com etapas separadas por divisor.
 
@@ -379,7 +383,7 @@ Variante “Quero ser fornecedor”: 4 etapas (`Preencha o formulário → Cota�
 
 ### 7.16 FAQ (Accordion)
 
-- Backgrounds permitidos: `#FFFFFF` ou `#F5F5F5`.
+- Backgrounds permitidos: `--background` ou `--secondary`.
 - Padrão: lista de perguntas com `chevron` que expande conteúdo.
 - Estrutura recomendada (shadcn `Accordion`):
 
@@ -400,7 +404,7 @@ Variante “Quero ser fornecedor”: 4 etapas (`Preencha o formulário → Cota�
 
 ### 7.17 Form
 
-- Background: `#F5F5F5` (desktop / tablet) ou `#FFFFFF` (mobile).
+- Background: `--secondary` (desktop / tablet) ou `--background` (mobile).
 - Layout: 2 colunas em desktop, 1 coluna em tablet/mobile.
 - Componentes:
   - **Float label input** (`.float-field` + `.float-input`).
@@ -441,7 +445,7 @@ Diretrizes:
 
 #### Alert box (com ilustração)
 
-- Ilustração: somente primária (`#8D0000`) ou branca (`#FFFFFF`); traçado humanizado.
+- Ilustração: somente `--primary` ou `--background`; traçado humanizado.
 - Largura segue o grid do maior componente em tela.
   - Telas **≤ 612 px**: largura = `viewport - 2 × margem` (ex.: 390 – 60 = **330 px**).
   - Telas **> 612 px**: largura igual ao campo de texto associado.
@@ -530,7 +534,7 @@ SCREEN-B (`vlItem`, `vlLimite`). Componente:
 ## 8. Acessibilidade
 
 - **Contraste:** mínimo WCAG **4.5:1** entre texto e fundo (ver alerta no PDF). Em combinações limítrofes, use **negrito** ou outro reforço.
-- **Foco visível:** sempre via `--shadow-focus` (`0 0 0 3px #F1D0C5`). Nunca `outline: none`.
+- **Foco visível:** sempre via `--shadow-focus`. Nunca `outline: none`.
 - **Cor não é o único indicador de estado** — combine com ícone, label ou padrão.
 - **Tipografia mínima:** 14 px corpo, 12 px metadados. Nunca abaixo de 12 px.
 - **Tap target:** mínimo 44×44 px em touch (`h-11`).
@@ -546,18 +550,19 @@ SCREEN-B (`vlItem`, `vlLimite`). Componente:
 
 - Use sempre os tokens (`--primary`, `--accent`, `bg-secondary`, `shadow-sm`, etc.) — nunca hex literal.
 - Combine `.ds-container` + `.ds-grid` para garantir margens e gutters do DS.
-- Para cards, use `.ds-card` (+ `--hover` / `--selected` / `--muted`) como base e estenda com classes Tailwind.
+- Para cards, use `.ds-card` como base e estenda com classes Tailwind. Estado
+  de hover e de selecionado saem de `--color-soft` e `--color-secondary`.
 - Para inputs, use `.float-field` + `.float-input` ou o componente `Input` de `@acme/ui` envolvido no padrão.
 - Animações com Framer Motion: somente `transform` e `opacity` (regra do projeto — GPU-safe).
 - Ilustrações: paleta restrita (primária + branco) com traçado humanizado.
 
 ### Não faça
 
-- ❌ Hex literal em componente (`bg-[#8D0000]`) — use `bg-primary`.
+- ❌ Hex literal em componente (`bg-[#0055ff]`) — use o token: `bg-primary`.
 - ❌ Sombras pretas (`rgba(0, 0, 0,0.x)`) — todas as sombras usam **navy 20%**.
 - ❌ Animar `width`, `height`, `top`, `left` — viola regra de performance.
 - ❌ Combinar Brand Display em corpo de texto longo.
-- ❌ Usar `#F59E0B` em fundo cheio — apenas a **10% de opacidade** e **somente em Atalhos / Passo a Passo**.
+- ❌ Usar `--warning` em fundo cheio — apenas a **10% de opacidade** e **somente em Atalhos / Passo a Passo**.
 - ❌ Banner vertical em mobile.
 - ❌ Acessar arquivos de primitivas em `packages/ui` para editar inline — sempre estender por composição.
 
@@ -631,7 +636,8 @@ O `FormDialog.tsx` aplica `max-h-[85dvh]` no contêiner do diálogo para impedir
 
 - Escopo: apenas o contêiner do `FormDialog`; nenhum outro componente usa `dvh`.
 - `85dvh` deixa margem para a barra de endereços móvel (dynamic viewport height) e respeita o padding do overlay.
-- Promoção futura: se mais diálogos precisarem do mesmo cap, registrar um token `--dialog-max-h` em `DESIGN.md` e migrar.
+- Promoção futura: se mais diálogos precisarem do mesmo cap, registrar o
+  token no `DESIGN.md` e migrar. Enquanto for um caso só, fica na classe.
 - Implementação: `packages/feature-directory/src/lib/components/forms/FormDialog.tsx`.
 
 ### 11.4 Novo Cadastro — faixa de cabeçalho de wizard + rodapé persistente (DS-EXT-3)
@@ -654,7 +660,7 @@ Anatomia canônica do card de passo de wizard (`WizardShell` em
 - **Rodapé `.sticky-cta--persist`** (modificador aditivo sobre
   `.sticky-cta`): CTA sempre visível também em ≥720px. Fundo `var(--card)`,
   hairline superior, cantos inferiores `var(--radius)`, padding vertical
-  12px @720 / 16px @1400; sangria lateral/inferior via `--ds-card-pad`
+  12px @720 / 16px @1400; sangria lateral/inferior via `--spacing-card-padding-mobile`
   (definida pelo `.ds-card`: 20/24/32px), `z-index: 10`. Acompanha
   `scroll-padding-bottom` no `html` para o foco por teclado nunca ficar
   sob a faixa (WCAG 2.4.11). A legenda "Campos com asterisco (\*) são

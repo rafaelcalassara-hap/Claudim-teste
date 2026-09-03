@@ -64,16 +64,17 @@ preencha os placeholders `{{...}}` com as respostas:
 | `app/layout.tsx`, `app/page.tsx` | título e subtítulo da aplicação |
 | `.env.example`, `.gitignore`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `components.json` | mantenha como estão |
 | `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/` | copie sem alterar |
-| `docs/design-system/` | copie sem alterar — é o design system que a aplicação segue |
+| `docs/design-system/` | copie sem alterar — é a fonte do tema da aplicação |
 
 Use `cp -R` para os arquivos que não mudam e Write só para os que têm
 placeholder.
 
-O design system que vai em `docs/design-system/` é um exemplo pronto, com
-marca fictícia. Se a empresa já tem o dela, é aqui que se troca: substitua os
-dois arquivos e ajuste o `@theme` do `globals.css` para espelhar os valores
-novos. Não pergunte isso na entrevista — a pessoa que abre o `/comecar` quer
-uma aplicação de pé, não uma decisão de design.
+O `docs/design-system/` é a fonte do tema, com marca fictícia. Se a empresa
+já tem o design system dela, é aqui que se troca: edite os valores no
+`DESIGN.md` e rode `python3 docs/design-system/gerar-tema.py` — o
+`globals.css` sai dele, e nenhum componente muda. Não pergunte isso na
+entrevista: quem abre o `/comecar` quer uma aplicação de pé, não uma decisão
+de design.
 
 **Nunca** crie `.env` com valores reais. O hook bloqueia, e com razão.
 

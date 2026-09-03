@@ -124,28 +124,31 @@ login em produção, então isso não vira uma aplicação interna aberta na int
 
 ## Design system
 
-O scaffold nasce com um design system em `docs/design-system/`, e o `@theme` do
-`app/globals.css` é o espelho dele — cada token traz o de-para em comentário
-(`--color-marca` ↔ `DS --primary`).
+Uma fonte de verdade por coisa. Aqui a coisa é tema, e a fonte é
+`docs/design-system/DESIGN.md` — cor, tipografia, raio, sombra e espaçamento
+vivem lá e em nenhum outro lugar.
 
-| Arquivo | Leitor | O que tem |
-|---|---|---|
-| `docs/design-system/DESIGN.md` | agente | YAML com paleta, tipografia, raio, sombra, espaçamento e a receita de cada componente |
-| `docs/design-system/DS-ACME.md` | pessoa | anatomia de componente, do/don't, acessibilidade |
-| `app/globals.css` | Tailwind | os mesmos valores com nome em português, virando utilitária |
+| Arquivo | Papel |
+|---|---|
+| `docs/design-system/DESIGN.md` | **a fonte.** YAML com os valores e a receita de cada componente |
+| `docs/design-system/DS-ACME.md` | guia de uso: anatomia, do/don't, acessibilidade. Cita token por nome, nunca por valor |
+| `docs/design-system/gerar-tema.py` | lê o `DESIGN.md` e escreve os derivados |
+| `app/globals.css` | **gerado** — o `@theme` do Tailwind |
+| `docs/design-system/showcase.html` | **gerado** — os tokens renderizados |
 
-Duas perguntas diferentes, dois arquivos: *qual é o valor* é pergunta de
-máquina, *como eu uso* é pergunta de gente. Num arquivo só, o agente gasta
-contexto lendo prosa e a pessoa caça a regra no meio de uma tabela de tokens.
+O nome da utilitária é o nome do token, sem tradução no meio:
+`--color-primary` gera `bg-primary`. Não existe um segundo vocabulário, e
+`page.tsx` e `button.tsx` não conhecem hex — trocar o tema é editar o
+`DESIGN.md` e rodar o gerador.
 
-O que isso muda na prática: o `/construir` lê o `DESIGN.md` antes de escrever
-tela, e o `/revisar` reprova hex solto na classe, cor arbitrária do Tailwind
-(`bg-blue-600`) e token novo no `@theme` sem par no DS — que é como nasce uma
-segunda paleta. Design system que ninguém verifica vira documento morto.
+`gerar-tema.py --checar` é o gate, e sai com 1 quando um derivado foi editado
+à mão ou quando um `.tsx` usa classe de tema sem token (`bg-azul`,
+`bg-blue-600`). O `/construir` roda no fim de cada rodada e o `/revisar`
+reporta o que ele apontar. Design system que ninguém verifica vira documento
+morto: antes deste arranjo o guia citava um `--color-high-contrast` que nunca
+existiu e o showcase tinha três cores inventadas na mão.
 
-A marca é fictícia, e é para ser trocada. Empresa com DS próprio substitui os
-dois arquivos e ajusta o `@theme`. Nenhum componente muda: `page.tsx` e
-`button.tsx` não conhecem hex, só utilitária de token.
+A marca é fictícia e existe para ser trocada.
 
 ## Escopo que falta
 

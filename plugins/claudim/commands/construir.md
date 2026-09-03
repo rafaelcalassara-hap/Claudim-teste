@@ -15,8 +15,10 @@ allowed-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, Skill, TodoWrite
 
 - Siga a skill `next-padroes` para qualquer tela, componente ou action.
 - Vai criar tela, componente, cor ou classe Tailwind? Leia
-  `docs/design-system/DESIGN.md` **antes** de escrever, não depois. Valor de
-  cor, raio e sombra sai de lá — não do seu gosto.
+  `docs/design-system/DESIGN.md` **antes** de escrever, não depois. Cor, raio,
+  sombra e espaçamento saem de lá — e só de lá. O `globals.css` é gerado:
+  mudou o tema, edite o `DESIGN.md` e rode
+  `python3 docs/design-system/gerar-tema.py`.
 - Toque em CPF, carteirinha, beneficiário, diagnóstico, URL ou tracking?
   Invoque `dados-sensiveis` **antes** de escrever, não depois.
 - Consulta, schema ou migração: skill `consultar-banco`. Tabela de sistema
@@ -39,6 +41,10 @@ usuário em uma frase o que aconteceu — sem jargão.
 "Terminei" sem aplicação rodando não conta. Ao fim de cada rodada:
 
 1. `npx tsc --noEmit` — erro de tipo aqui é bug, não chatice do TypeScript.
+2. Tocou em tela, componente ou tema?
+   `python3 docs/design-system/gerar-tema.py --checar` — ele acusa
+   `globals.css` fora de sincronia com o `DESIGN.md` e classe de tema sem
+   token.
 2. `npm run dev` (siga a skill `run` se disponível) e abra
    http://localhost:3000. Confirme que a tela abre e que o passo entregue está
    visível nela.
