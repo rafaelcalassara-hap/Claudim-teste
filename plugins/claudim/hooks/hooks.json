@@ -6,17 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_write.py\"",
-            "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_pii.py\"",
-            "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_auth.py\"",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_edicao.py\"",
             "timeout": 15
           }
         ]
@@ -38,13 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/post_format.py\"",
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/post_lint.py\"",
-            "timeout": 45
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/pos_edicao.py\"",
+            "timeout": 60
           }
         ]
       }

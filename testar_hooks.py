@@ -188,6 +188,25 @@ def main() -> int:
     casos.append(("processo: .tsx com PLANO.md", "guard_write",
                   escrita(p, f"{p}/app/page.tsx"), False))
 
+    # A porta unica. O hooks.json chama guard_edicao e pos_edicao, nao os guards
+    # um a um: se o encadeamento quebrar, tudo passa a liberar em silencio. Cada
+    # caso abaixo prova que a chamada chega a um guard diferente da fila — o de
+    # pii roda fora do greenfield de proposito, para o bloqueio nao poder vir do
+    # guard_write, que roda antes dele.
+    casos += [
+        ("porta: guard_edicao chega no guard_write (segredo)", "guard_edicao",
+         escrita(p, f"{p}/chave.pem", "----"), True),
+        ("porta: guard_edicao chega no guard_pii (CPF real)", "guard_edicao",
+         escrita(str(tmp), f"{tmp}/seed.ts", f'const CPF = "{cpf_valido}";'), True),
+        ("porta: guard_edicao chega no guard_auth (autocadastro)", "guard_edicao",
+         escrita(p, f"{p}/app/criar-conta/page.tsx", "return <SignUp />;"), True),
+        ("porta: guard_edicao libera codigo normal", "guard_edicao",
+         escrita(p, f"{p}/components/tabela.tsx",
+                 "export function T() { return null; }"), False),
+        ("porta: pos_edicao sem prettier nem eslint libera", "pos_edicao",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+    ]
+
     falhas = 0
     total = 0
     for nome, script, evento, deve_bloquear in casos:

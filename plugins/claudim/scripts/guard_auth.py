@@ -232,13 +232,12 @@ def checar_allowlist(conteudo: str) -> None:
         )
 
 
-def main() -> None:
-    evento = ler_evento()
+def checar(evento: dict) -> None:
     caminho = caminho_alvo(evento)
     if caminho is None:
-        sair_ok()
+        return
     if not eh_projeto_greenfield(raiz_projeto(evento)):
-        sair_ok()  # fora de projeto do /comecar o plugin nao manda no login
+        return  # fora de projeto do /comecar o plugin nao manda no login
 
     conteudo = conteudo_escrito(evento)
     checar_autocadastro(caminho, conteudo)
@@ -247,8 +246,8 @@ def main() -> None:
     checar_provider_credenciais(conteudo)
     checar_middleware(caminho, conteudo)
     checar_allowlist(conteudo)
-    sair_ok()
 
 
 if __name__ == "__main__":
-    main()
+    checar(ler_evento())
+    sair_ok()

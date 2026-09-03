@@ -58,8 +58,7 @@ def erros(saida: str) -> list[str]:
     return achados
 
 
-def main() -> None:
-    evento = ler_evento()
+def lintar(evento: dict) -> None:
     caminho = caminho_alvo(evento)
     if caminho is None or caminho.suffix.lower() not in EXTENSOES or not caminho.is_file():
         return
@@ -105,4 +104,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    lintar(ler_evento())

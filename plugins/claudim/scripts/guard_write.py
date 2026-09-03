@@ -122,16 +122,16 @@ def checar_plano(raiz: Path, caminho: Path) -> None:
     )
 
 
-def main() -> None:
-    evento = ler_evento()
+def checar(evento: dict) -> None:
+    """Chamado pelo guard_edicao.py. Nao sai do processo: quem sai e o
+    bloquear(), e so quando ha o que bloquear."""
     caminho = caminho_alvo(evento)
     if caminho is None:
-        sair_ok()
-    raiz = raiz_projeto(evento)
+        return
     checar_segredo(caminho, conteudo_escrito(evento))
-    checar_plano(raiz, caminho)
-    sair_ok()
+    checar_plano(raiz_projeto(evento), caminho)
 
 
 if __name__ == "__main__":
-    main()
+    checar(ler_evento())
+    sair_ok()

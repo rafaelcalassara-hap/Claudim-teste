@@ -144,31 +144,7 @@ Três linhas, sem lista de arquivos:
 - Próximo passo literal: **"Agora rode `/planejar` para dizer o que a
   aplicação precisa fazer."**
 
-Guarde para depois, sem falar agora: quando a aplicação precisar de login de
-verdade, o login é a conta Google da empresa, e ligá-lo exige um cliente OAuth
-criado no Google Cloud Console. **Isso não é passo de marketing.** Quando o
-momento chegar, ofereça as duas saídas, nesta ordem:
-
-1. Pedir ao time de TI um "cliente OAuth de Aplicativo da Web" para esta
-   aplicação, informando a URI de redirecionamento
-   `http://localhost:3000/api/auth/callback/google` (e a URL de produção, se já
-   existir). TI devolve `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`.
-2. Se a pessoa quiser fazer sozinha, conduza pelo Google Cloud Console um passo
-   por vez — APIs e Serviços → Credenciais → Criar credenciais → ID do cliente
-   OAuth → Aplicativo da Web — e confira o URI de redirecionamento antes de
-   fechar. Errar esse campo é o motivo nº 1 de o login não funcionar.
-
-`AUTH_SECRET` você gera com `npx auth secret`, sem perguntar nada a ninguém.
-
-`EMAILS_PERMITIDOS` é preenchido **na mesma hora** que as chaves, começando pelo
-`email_criador` do `state.json` — a lista vazia não deixa ninguém entrar, e é
-assim de propósito. Diga também, em uma frase, que estar logado no Google da
-empresa não basta: só entra quem está na lista. Senha e recuperação de senha são
-da conta Google — esta aplicação nunca guarda senha, e você nunca escreve tela
-de "esqueci minha senha".
-
-Ao publicar, a URL de produção precisa ser acrescentada nos URIs de
-redirecionamento do mesmo cliente OAuth, com o final
-`/api/auth/callback/google`. Sem isso o login funciona na máquina da pessoa e
-quebra no ar — e o erro que o Google mostra (`redirect_uri_mismatch`) não diz
-isso em português.
+Guarde para depois, sem falar agora: um dia essa aplicação vai precisar de
+login de verdade, e ligar isso não é passo de marketing. Quando o momento
+chegar, leia `${CLAUDE_PLUGIN_ROOT}/skills/next-padroes/references/acesso.md`
+— a seção "Ligar o login" tem o roteiro inteiro. Não adiante nada disso agora.

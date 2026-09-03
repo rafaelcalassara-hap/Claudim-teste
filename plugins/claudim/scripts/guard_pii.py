@@ -90,12 +90,11 @@ def termos_saude_em(texto: str) -> list[str]:
 
 # --------------------------------------------------------------------------- #
 
-def main() -> None:
-    evento = ler_evento()
+def checar(evento: dict) -> None:
     caminho = caminho_alvo(evento)
     conteudo = conteudo_escrito(evento)
     if caminho is None or not conteudo:
-        sair_ok()
+        return
 
     # 1. CPF / CNS validos
     for achado in RE_CPF.findall(conteudo):
@@ -148,8 +147,7 @@ def main() -> None:
                 "mascare antes de enviar. Posso reescrever assim — confirme.",
             )
 
-    sair_ok()
-
 
 if __name__ == "__main__":
-    main()
+    checar(ler_evento())
+    sair_ok()

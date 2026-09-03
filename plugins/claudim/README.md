@@ -21,19 +21,23 @@ O laço normal é `/construir` → `/revisar` até ficar bom.
 
 Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 
-**PreToolUse · Write/Edit** (`guard_write.py`)
+Os três primeiros entram por uma porta só, `guard_edicao.py`: um processo
+Python por edição em vez de três, e o primeiro achado bloqueia — uma mensagem,
+não três de uma vez.
+
+**Write/Edit · segredo e processo** (`guard_write.py`)
 - escrever `.env`, `*.pem`, `*.key`, `credentials*`, chave de service account
 - senha, chave de API ou token colados dentro do código
 - segredo atrás de `NEXT_PUBLIC_` — esse prefixo publica o valor no navegador
 - escrever qualquer código-fonte antes de existir `PLANO.md` *(só em projeto
   criado pelo `/comecar` — fora dele, não atrapalha)*
 
-**PreToolUse · Write/Edit** (`guard_pii.py`)
+**Write/Edit · dado sensível** (`guard_pii.py`)
 - CPF ou CNS com dígito verificador **válido** dentro de arquivo
 - condição de saúde em fixture, seed ou CSV de exemplo
 - condição de saúde dentro de chamada de tracking/pixel/dataLayer
 
-**PreToolUse · Write/Edit** (`guard_auth.py`)
+**Write/Edit · modelo de acesso** (`guard_auth.py`)
 - recriar tela de autocadastro: rota `criar-conta`/`sign-up`, formulário de
   cadastro
 - coluna de senha, hash de senha (`bcrypt`, `argon2`) ou token de recuperação
@@ -53,11 +57,14 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 - `vercel --prod` e `vercel promote` — publicar não faz parte do processo ainda
 - `rm` de arquivo `.db` — isso é o banco inteiro da aplicação
 
-**PostToolUse · Write/Edit** (`post_format.py`)
+**PostToolUse · Write/Edit** (`pos_edicao.py`, chama os dois abaixo nesta
+ordem — assim o eslint sempre vê o arquivo já formatado)
+
+**Formatar** (`post_format.py`)
 - `prettier --write` em `.ts/.tsx/.css/.json/.md`, usando o prettier do próprio
   projeto. Silencioso. Nunca bloqueia.
 
-**PostToolUse · Write/Edit** (`post_lint.py`)
+**Lintar** (`post_lint.py`)
 - `eslint --fix` no arquivo recém-escrito. O que o `--fix` resolve, ele resolve
   calado; o que sobra volta **para o modelo** por exit 2 — nunca para a tela do
   usuário. É a diferença que faz esse hook ser usável aqui: quem lê
@@ -74,7 +81,7 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 |---|---|
 | `escrever-plano` | transformar pedido vago em `PLANO.md` com critério de negócio |
 | `dados-sensiveis` | LGPD Art. 11, vazamento por URL/evento, ANS |
-| `next-padroes` | server/client, consulta em `lib/dados/`, server action com zod e sessão, Tailwind v4, CSV, erro legível |
+| `next-padroes` | server/client e o que vale sempre. O detalhe está em `references/`, lido só quando o assunto aparece: `dados.md`, `acoes.md`, `acesso.md`, `ui.md` |
 | `consultar-banco` | Prisma: o que pode escrever, teto de linhas, migração, PII mascarada |
 
 ## Subagents
