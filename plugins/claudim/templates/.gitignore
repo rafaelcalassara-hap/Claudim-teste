@@ -20,8 +20,9 @@ build/
 next-env.d.ts
 .vercel/
 
-# Nada de dado real no repositório.
-dados/
+# Nada de dado real no repositório. A barra na frente prende a regra à raiz:
+# `lib/dados/` é código (as consultas do Prisma) e tem que ir para o git.
+/dados/
 *.csv
 *.xlsx
 !exemplos/*.csv

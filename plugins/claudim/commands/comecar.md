@@ -63,7 +63,13 @@ preencha os placeholders `{{...}}` com as respostas:
 | `package.json` | `{{SLUG_DO_PROJETO}}` — o nome em minúsculas, com hífen |
 | `app/layout.tsx`, `app/page.tsx` | título e subtítulo da aplicação |
 | `.env.example`, `.gitignore`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `components.json` | mantenha como estão |
+| `eslint.config.mjs`, `eslint.config.revisao.mjs`, `.prettierrc`, `.prettierignore` | copie sem alterar — são as regras de código, e um hook as aplica sozinho |
 | `auth.ts`, `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/`, `app/api/` | copie sem alterar |
+
+Atenção ao `cp -R`: os arquivos que começam com ponto (`.prettierrc`,
+`.prettierignore`, `.gitignore`, `.env.example`) não vêm no `cp -R origem/*`.
+Copie a pasta inteira (`cp -R "${CLAUDE_PLUGIN_ROOT}/templates/." .`) ou liste
+os arquivos com ponto à parte.
 
 Use `cp -R` para os arquivos que não mudam e Write só para os que têm
 placeholder.
@@ -106,8 +112,13 @@ npm install
 npx prisma generate
 npx prisma db push
 npx prisma db seed
+npm run checar
 npm run dev
 ```
+
+`npm run checar` roda o TypeScript e o eslint. No projeto recém-criado ele passa
+limpo — se acusar algo, é porque o scaffold saiu errado, e conserte antes de
+seguir. Não mostre a saída desse comando ao usuário.
 
 `db push` cria o arquivo `prisma/dev.db` e `db seed` põe 200 registros de
 exemplo dentro. Os dois são obrigatórios: sem eles a tela abre vazia, e o

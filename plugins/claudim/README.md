@@ -57,6 +57,13 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 - `prettier --write` em `.ts/.tsx/.css/.json/.md`, usando o prettier do próprio
   projeto. Silencioso. Nunca bloqueia.
 
+**PostToolUse · Write/Edit** (`post_lint.py`)
+- `eslint --fix` no arquivo recém-escrito. O que o `--fix` resolve, ele resolve
+  calado; o que sobra volta **para o modelo** por exit 2 — nunca para a tela do
+  usuário. É a diferença que faz esse hook ser usável aqui: quem lê
+  `no-explicit-any` é quem sabe o que fazer com isso, e o público-alvo não vê
+  erro de lint nenhum. Sem eslint instalado ou sem config, sai calado.
+
 **SessionStart** (`session_state.py`)
 - injeta estado: passos abertos do `PLANO.md`, branch, alterações não
   commitadas, flag de dado sensível. Não é banner.
@@ -67,7 +74,7 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 |---|---|
 | `escrever-plano` | transformar pedido vago em `PLANO.md` com critério de negócio |
 | `dados-sensiveis` | LGPD Art. 11, vazamento por URL/evento, ANS |
-| `next-padroes` | server/client, server action com zod e sessão, Tailwind v4, CSV, erro legível |
+| `next-padroes` | server/client, consulta em `lib/dados/`, server action com zod e sessão, Tailwind v4, CSV, erro legível |
 | `consultar-banco` | Prisma: o que pode escrever, teto de linhas, migração, PII mascarada |
 
 ## Subagents
@@ -101,6 +108,44 @@ Senha, cadastro e recuperação são da conta Google. Esta aplicação nunca gua
 senha, não tem tabela de usuário e não manda e-mail — a sessão é um cookie
 assinado, sem `adapter` e sem linha no banco. O parâmetro `hd` na tela do Google
 só sugere a conta da empresa; é a lista que barra, não ele.
+
+## Estilo de código
+
+Duas ferramentas, uma decisão cada: **prettier** decide a forma, **eslint**
+decide o que é erro. `eslint-config-prettier` desliga toda regra do eslint que
+opinasse sobre forma, para as duas não brigarem. O par roda por hook, a cada
+arquivo salvo — não há passo manual e o usuário não vê saída nenhuma.
+
+TypeScript fica em `strict: true` e para por aí. Nada de
+`noUncheckedIndexedAccess` ou `exactOptionalPropertyTypes`: uma parede de erro
+de tipo que o público-alvo não sabe ler é exatamente o modo de falha que este
+plugin existe para evitar. O que o eslint acrescenta ao `strict` é a regra com
+consequência conhecida — `no-explicit-any`, `findMany` sem `take`,
+`useEffect`+`fetch`, `react/no-danger` — não preferência de estilo.
+
+As regras que precisam de tipo ficam separadas em `eslint.config.revisao.mjs` e
+só o `/revisar` as roda: elas montam o programa inteiro antes de analisar, lento
+demais para um hook por arquivo. É lá que mora `no-floating-promises` — a
+escrita no banco sem `await`, que nem o `tsc` nem abrir a tela pegam.
+
+## Uma tabela, um arquivo
+
+Consulta do Prisma mora em `lib/dados/<tabela>.ts`, nunca dentro de `page.tsx`
+nem de `acoes.ts`. Não é MVC: no App Router, o Server Component já é view e
+controller, a action já é o controller de escrita e o Prisma já é o model —
+criar `controllers/` ou `viewmodels/` só duplicaria o que já existe.
+
+O que essa camada compra é concreto: `take`, `select` explícito, mascaramento e
+conversão de centavos ficam **juntos, num arquivo por tabela**. Espalhados por
+página e action, os quatro dependem de alguém lembrar de cada um toda vez; num
+lugar só, o `/revisar` tem onde olhar e o `grep` por `db.` fora de `lib/dados/`
+acha o que escapou.
+
+O limite é explícito na skill: funções `async` exportadas, e nada além. Sem
+classe, sem repositório genérico, sem interface, sem par entidade/DTO. Como o
+mascaramento é obrigatório, só existe uma forma de saída legal — a mascarada —
+então não há camada de conversão para inventar. Tabela nova é arquivo novo,
+nunca camada nova.
 
 ## Stack fixo
 

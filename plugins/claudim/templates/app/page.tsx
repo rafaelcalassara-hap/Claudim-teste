@@ -3,47 +3,21 @@
  * Server Component: busca no servidor e manda HTML pronto. Não tem
  * "use client" aqui, então nada deste arquivo vai para o navegador — só o
  * resultado já mascarado.
+ *
+ * Esta tela não conhece o Prisma. Ela pede a lista para `lib/dados/eventos.ts`,
+ * que é quem sabe de `take`, `select`, mascaramento e centavos. Página cuida de
+ * sessão, de filtro e de o que aparece na tela — só isso.
  */
 
 import { ExportarCsv } from "@/components/exportar-csv";
 import { exigirSessao } from "@/lib/auth";
-import { bancoConfigurado, db } from "@/lib/db";
-import { tabelaExemplo } from "@/lib/dados-sinteticos";
-import { mascararRegistros } from "@/lib/pii";
+import { listarEventos, type EventoNaTela } from "@/lib/dados/eventos";
+import { bancoConfigurado } from "@/lib/db";
 
 // Esta tela lê a sessão e o banco a cada acesso — não dá para gerar no build.
 export const dynamic = "force-dynamic";
 
 const PERIODOS = [7, 30, 90, 180];
-
-async function carregar(dias: number) {
-  // Troque o corpo desta função pela consulta real quando o banco estiver
-  // configurado. Enquanto não estiver, a tela roda com dado sintético.
-  // Passa pelo mesmo mascaramento do caminho real: o dado é falso, mas o
-  // código que a tela exercita tem que ser o de produção.
-  if (!bancoConfigurado()) return mascararRegistros(tabelaExemplo(200));
-
-  const desde = new Date(Date.now() - dias * 86_400_000);
-  const linhas = await db.evento.findMany({
-    where: { criadoEm: { gte: desde } },
-    select: { id: true, criadoEm: true, canal: true, uf: true, valorCentavos: true },
-    orderBy: { criadoEm: "desc" },
-    take: 1000, // sempre um teto: tabela de fato sem limite derruba a página
-  });
-
-  // O banco guarda centavos (inteiro); a tela mostra reais. Converta aqui, na
-  // saída — não deixe a coluna `valorCentavos` chegar crua na tabela, senão a
-  // pessoa lê 1990 onde deveria ler R$ 19,90.
-  const paraTela = linhas.map(({ valorCentavos, ...resto }) => ({
-    ...resto,
-    valor: (valorCentavos / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }),
-  }));
-
-  return mascararRegistros(paraTela);
-}
 
 export default async function Pagina({
   searchParams,
@@ -55,9 +29,9 @@ export default async function Pagina({
   const { dias: diasBruto } = await searchParams;
   const dias = PERIODOS.includes(Number(diasBruto)) ? Number(diasBruto) : 30;
 
-  let dados: Record<string, string | number>[];
+  let dados: EventoNaTela[];
   try {
-    dados = await carregar(dias);
+    dados = await listarEventos({ dias });
   } catch (erro) {
     return (
       <div className="rounded-padrao border border-alerta/40 bg-alerta/5 p-4">
@@ -81,7 +55,8 @@ export default async function Pagina({
       {!bancoConfigurado() && (
         <p className="rounded-padrao border border-borda bg-marca-suave p-3 text-sm">
           Mostrando <strong>dados de exemplo</strong>, gerados na hora. Para ver dados de
-          verdade, preencha <code>DATABASE_URL</code> no arquivo <code>.env</code>.
+          verdade, recrie o banco com <code>npx prisma db push</code> e{" "}
+          <code>npx prisma db seed</code>.
         </p>
       )}
 
@@ -120,7 +95,9 @@ export default async function Pagina({
               <thead className="bg-marca-suave text-left">
                 <tr>
                   {colunas.map((c) => (
-                    <th key={c} className="px-3 py-2 font-medium">{c}</th>
+                    <th key={c} className="px-3 py-2 font-medium">
+                      {c}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -128,7 +105,9 @@ export default async function Pagina({
                 {dados.slice(0, 200).map((linha, i) => (
                   <tr key={i} className="border-t border-borda">
                     {colunas.map((c) => (
-                      <td key={c} className="px-3 py-2">{String(linha[c])}</td>
+                      <td key={c} className="px-3 py-2">
+                        {String(linha[c])}
+                      </td>
                     ))}
                   </tr>
                 ))}

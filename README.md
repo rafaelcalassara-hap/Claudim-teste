@@ -24,11 +24,15 @@ instalou. É esse o motivo de ser plugin e não template repo.
 python3 testar_hooks.py
 ```
 
-53 casos cobrindo bloqueio de segredo, `NEXT_PUBLIC_` com segredo, PII,
+57 casos cobrindo bloqueio de segredo, `NEXT_PUBLIC_` com segredo, PII,
 tracking, git, SQL destrutivo, reset de banco, deploy em produção e o modelo de
 acesso (autocadastro, senha no projeto, rota pública nova, lista de quem entra).
 Hook que não bloqueia é o modo de falha caro aqui: o público-alvo não percebe
 que passou.
+
+Os quatro últimos casos são o contrário: os hooks de formatação e lint têm que
+sair **calados** quando o projeto não tem as ferramentas instaladas. Estilo
+travando o trabalho é um modo de falha próprio.
 
 ## Estado
 

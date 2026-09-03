@@ -20,7 +20,13 @@ function paraCsv(linhas: Linha[]): string {
   ].join("\n");
 }
 
-export function ExportarCsv({ linhas, nomeArquivo }: { linhas: Linha[]; nomeArquivo: string }) {
+export function ExportarCsv({
+  linhas,
+  nomeArquivo,
+}: {
+  linhas: Linha[];
+  nomeArquivo: string;
+}) {
   function baixar() {
     // BOM na frente: sem ele o Excel abre acento errado.
     const blob = new Blob(["﻿" + paraCsv(linhas)], { type: "text/csv;charset=utf-8" });

@@ -7,12 +7,7 @@
 
 import "server-only";
 import { auth } from "@/auth";
-import {
-  authConfigurado,
-  ehProducao,
-  emailPermitido,
-  emailsPermitidos,
-} from "./config";
+import { authConfigurado, ehProducao, emailPermitido, emailsPermitidos } from "./config";
 
 export async function exigirSessao(): Promise<string> {
   if (!authConfigurado()) {

@@ -107,7 +107,7 @@ def main() -> None:
                 "CPF de beneficiario nao pode entrar em codigo nem em arquivo de exemplo "
                 "(LGPD, e piora porque aqui e operadora de saude).",
                 "Use o gerador que ja veio no projeto: `import { cpfFicticio } from "
-                "\"@/lib/dados-sinteticos\"` — ele produz numeros com a cara certa e sem dono. "
+                "\"@/lib/dados/sinteticos\"` — ele produz numeros com a cara certa e sem dono. "
                 "Se o CPF precisa vir do banco, ele fica no banco e nunca no arquivo.",
             )
     for achado in RE_CNS.findall(conteudo):
@@ -116,7 +116,7 @@ def main() -> None:
                 "Tem um numero de carteirinha (CNS) real no texto.",
                 f"O numero `{achado}` e um CNS valido. Numero de carteirinha identifica "
                 "beneficiario e e dado sensivel de saude (LGPD Art. 11).",
-                "Use `import { cnsFicticio } from \"@/lib/dados-sinteticos\"`. "
+                "Use `import { cnsFicticio } from \"@/lib/dados/sinteticos\"`. "
                 "Dado de beneficiario de verdade so em consulta ao banco, em tempo de execucao.",
             )
 

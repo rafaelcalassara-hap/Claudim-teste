@@ -2,13 +2,13 @@
  *
  * Rode com: npx prisma db seed
  *
- * Regra que não muda: o que entra aqui é gerado por `lib/dados-sinteticos.ts`.
+ * Regra que não muda: o que entra aqui é gerado por `lib/dados/sinteticos.ts`.
  * Dado de pessoa real não entra em arquivo — nem neste. O hook do plugin
  * bloqueia CPF ou carteirinha de verdade, e condição de saúde em seed.
  */
 
 import { PrismaClient } from "@prisma/client";
-import { tabelaExemplo } from "../lib/dados-sinteticos";
+import { tabelaExemplo } from "../lib/dados/sinteticos";
 
 const db = new PrismaClient();
 

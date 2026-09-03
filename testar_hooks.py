@@ -40,6 +40,14 @@ def bash(cwd: str, comando: str) -> dict:
     }
 
 
+def pos_escrita(cwd: str, caminho: str) -> dict:
+    """PostToolUse: o arquivo ja existe em disco quando o hook roda."""
+    return {
+        "hook_event_name": "PostToolUse", "tool_name": "Write", "cwd": cwd,
+        "tool_input": {"file_path": caminho},
+    }
+
+
 def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="greenfield-teste-"))
     projeto = tmp / "projeto"
@@ -154,9 +162,25 @@ def main() -> int:
          escrita(p, f"{p}/prisma/schema.prisma", "model Usuario { id String @id\n  email String }"), False),
         ("auth: fora de projeto greenfield", "guard_auth",
          escrita(str(tmp), f"{tmp}/app/criar-conta/page.tsx", "return <SignUp />;"), False),
+
+        # Formatador e lint nunca travam o trabalho: sem node_modules no projeto
+        # de teste, os dois tem que sair 0 e calados. Hook de estilo que bloqueia
+        # e pior do que codigo mal formatado — o publico-alvo nao sabe o que fazer.
+        ("estilo: sem eslint instalado, post_lint libera", "post_lint",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+        ("estilo: sem prettier instalado, post_format libera", "post_format",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+        ("estilo: post_lint ignora arquivo que nao e codigo", "post_lint",
+         pos_escrita(p, f"{p}/PLANO.md"), False),
+        ("estilo: post_lint ignora arquivo inexistente", "post_lint",
+         pos_escrita(p, f"{p}/nao/existe.ts"), False),
     ]
 
     # Este caso so vale depois que o PLANO.md existir; roda por ultimo.
+    # PostToolUse roda com o arquivo ja gravado.
+    (projeto / "app").mkdir(parents=True, exist_ok=True)
+    (projeto / "app" / "page.tsx").write_text("export default function P() { return null; }\n")
+
     def criar_plano():
         (projeto / "PLANO.md").write_text("- [ ] 1. tela")
 
