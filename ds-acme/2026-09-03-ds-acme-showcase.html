@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acme Design System V2 — showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Bricolage+Grotesque:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* brand */
+  --primary:#8D0000; --primary-darker:#4D1D00; --primary-foreground:#FFFFFF;
+  --accent:#009E90; --accent-foreground:#FFFFFF; --highlight:#4EE0FF; --soft:#E3F6F6;
+  /* surface */
+  --background:#FFFFFF; --foreground:#2D2D2D; --card:#FFFFFF; --card-foreground:#2D2D2D;
+  --secondary:#F5F5F5; --muted:#F5F5F5; --muted-foreground:rgba(45,45,45,.6);
+  /* status */
+  --success:#16A34A; --destructive:#DC2626; --destructive-foreground:#FFFFFF; --warning:#F59E0B;
+  /* line */
+  --border:#8D0000; --border-muted:#ACACAC; --input:#ACACAC; --ring:#F1D0C5;
+  /* radius */
+  --radius-sm:2px; --radius-md:4px; --radius-lg:6px; --radius-xl:10px;
+  /* elevation */
+  --shadow-sm:0 3px 6px rgba(141,0,0,.20);
+  --shadow-lg:0 6px 12px rgba(141,0,0,.20);
+  --shadow-focus:0 0 0 3px #F1D0C5;
+  --overlay:rgba(0,0,0,.80);
+  /* type */
+  --font-brand-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --font-inter:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-inter);line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:40px}
+.masthead{background:var(--primary);color:var(--primary-foreground);padding:56px 40px;margin-bottom:8px}
+.masthead h1{font-family:var(--font-brand-display);font-weight:700;letter-spacing:-.01em;font-size:3rem;margin:0 0 8px}
+.masthead p{margin:0;opacity:.85;max-width:60ch}
+.meta{font-size:.8rem;opacity:.7;margin-top:20px}
+h2{font-family:var(--font-brand-display);font-weight:700;letter-spacing:-.01em;font-size:1.75rem;
+   margin:56px 0 4px;padding-bottom:10px;border-bottom:2px solid var(--primary)}
+h2 .n{color:var(--accent);margin-right:10px}
+.sub{color:var(--muted-foreground);font-size:.9rem;margin:0 0 24px}
+h3{font-size:1.05rem;margin:32px 0 12px;font-weight:700}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82em;background:var(--secondary);
+     padding:2px 6px;border-radius:var(--radius-sm)}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.g2{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+/* swatch */
+.sw{border:1px solid var(--border-muted);border-radius:var(--radius-lg);overflow:hidden;background:var(--card)}
+.sw .chip{height:84px;display:flex;align-items:flex-end;padding:8px}
+.sw .chip span{font-size:.7rem;background:rgba(255,255,255,.9);color:#2D2D2D;padding:1px 6px;border-radius:var(--radius-sm)}
+.sw .body{padding:10px 12px}
+.sw .tok{font-family:ui-monospace,monospace;font-size:.78rem;font-weight:700}
+.sw .use{font-size:.75rem;color:var(--muted-foreground);margin-top:2px}
+.sw .hex{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--muted-foreground)}
+/* componentes */
+.demo{border:1px solid var(--border-muted);border-radius:var(--radius-lg);padding:24px;background:var(--card)}
+.demo + .demo{margin-top:16px}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--font-inter);font-weight:700;font-size:.95rem;padding:12px 24px;
+     border-radius:var(--radius-lg);border:none;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--accent);color:var(--accent-foreground);box-shadow:var(--shadow-sm)}
+.btn-primary:hover{filter:brightness(.92)}
+.btn-secondary{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn-secondary:hover{background:var(--primary);color:var(--primary-foreground)}
+.btn-tertiary{background:transparent;color:var(--primary);text-decoration:none;padding:12px 8px}
+.btn-tertiary:hover{text-decoration:underline}
+.btn:disabled{color:var(--border-muted);border-color:var(--border-muted);background:transparent;cursor:not-allowed}
+.btn:focus-visible{outline:none;box-shadow:var(--shadow-focus)}
+/* float label */
+.ff{position:relative;max-width:340px}
+.ff input{width:100%;height:56px;padding:22px 14px 6px;border:1px solid var(--input);
+          border-radius:var(--radius-lg);font-family:var(--font-inter);font-size:1rem;background:var(--card);color:var(--foreground)}
+.ff label{position:absolute;left:14px;top:17px;color:var(--muted-foreground);font-size:1rem;
+          transition:.15s;pointer-events:none}
+.ff input:focus{outline:none;border-color:var(--primary);box-shadow:var(--shadow-focus)}
+.ff input:focus + label,.ff input:not(:placeholder-shown) + label{top:7px;font-size:11px;font-weight:700;color:var(--primary)}
+.ff[data-invalid] input{border-color:var(--destructive)}
+.ff[data-invalid] label{color:var(--destructive)}
+.hint{font-size:.75rem;color:var(--destructive);margin-top:5px}
+/* cards */
+.dscard{background:var(--card);border:1px solid var(--primary);border-radius:var(--radius-lg);
+        box-shadow:var(--shadow-sm);padding:32px}
+.dscard h4{margin:0 0 8px;font-size:1.1rem}
+.dscard p{margin:0;color:var(--muted-foreground);font-size:.9rem}
+.quick{background:rgba(245,158,11,.10);border:1px solid var(--border-muted)}
+/* alerts */
+.alert{display:flex;gap:12px;padding:16px;border-radius:var(--radius-lg);align-items:flex-start;font-size:.9rem}
+.alert b{font-weight:700}
+.a-warn{background:rgba(245,158,11,.10);border-left:4px solid var(--warning)}
+.a-info{background:var(--soft);border-left:4px solid var(--primary)}
+.a-err{background:rgba(220,38,38,.08);border-left:4px solid var(--destructive)}
+.a-ok{background:rgba(22,163,74,.08);border-left:4px solid var(--success)}
+.ico{font-size:1.2rem;line-height:1.3}
+/* badges */
+.badge{display:inline-block;padding:3px 12px;border-radius:999px;font-size:.75rem;font-weight:700}
+/* accordion */
+details{border-bottom:1px solid var(--border-muted);padding:14px 0}
+summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'⌄';color:var(--primary);font-size:1.3rem;transition:.2s}
+details[open] summary::after{transform:rotate(180deg)}
+details p{margin:10px 0 0;color:var(--muted-foreground);font-size:.9rem}
+/* arrow */
+.arrow{width:40px;height:40px;border-radius:var(--radius-lg);background:var(--background);
+       border:1px solid var(--primary);color:var(--primary);box-shadow:var(--shadow-sm);
+       display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem}
+.arrow:disabled{color:var(--border-muted);border-color:var(--border-muted);cursor:not-allowed}
+/* type scale */
+.ts{border-collapse:collapse;width:100%;font-size:.88rem}
+.ts th,.ts td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--secondary)}
+.ts th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-foreground)}
+.ts .sample{font-size:1rem}
+/* spacing + radius + shadow */
+.bar{background:var(--accent);height:22px;border-radius:var(--radius-sm)}
+.box{background:var(--card);border:1px solid var(--primary);height:78px;display:flex;
+     align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-size:.75rem}
+.shbox{background:var(--card);height:78px;border-radius:var(--radius-lg);display:flex;
+       align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-size:.75rem}
+.bp{display:flex;gap:10px;flex-wrap:wrap}
+.bp div{background:var(--secondary);border-left:3px solid var(--accent);padding:10px 16px;border-radius:var(--radius-sm);font-size:.85rem}
+.bp b{display:block;font-family:ui-monospace,monospace;color:var(--primary)}
+.note{background:var(--secondary);border-left:3px solid var(--accent);padding:12px 16px;
+      border-radius:var(--radius-sm);font-size:.85rem;margin-top:16px}
+footer{margin:64px 0 0;padding:24px 0;border-top:1px solid var(--border-muted);
+       color:var(--muted-foreground);font-size:.8rem}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div style="max-width:1100px;margin:0 auto">
+    <h1>Acme Design System V2</h1>
+    <p>Showcase dos tokens e componentes definidos em <code style="background:rgba(255,255,255,.15);color:#fff">DESIGN.md</code> e <code style="background:rgba(255,255,255,.15);color:#fff">DS-ACME.md</code>.</p>
+    <div class="meta">03/09/2026 · POC greenfield · valores lidos dos dois arquivos nesta data</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<h2><span class="n">1</span>Cores</h2>
+<p class="sub">Nunca use hex literal em componente — sempre referencie pelo token.</p>
+
+<h3>Brand</h3>
+<div class="grid g4">
+  <div class="sw"><div class="chip" style="background:#8D0000"><span>#8D0000</span></div><div class="body"><div class="tok">--primary</div><div class="use">Marca principal</div></div></div>
+  <div class="sw"><div class="chip" style="background:#4D1D00"><span>#4D1D00</span></div><div class="body"><div class="tok">--primary-darker</div><div class="use">Hover / pressionado</div></div></div>
+  <div class="sw"><div class="chip" style="background:#009E90"><span>#009E90</span></div><div class="body"><div class="tok">--accent</div><div class="use">CTA principal</div></div></div>
+  <div class="sw"><div class="chip" style="background:#4EE0FF"><span>#4EE0FF</span></div><div class="body"><div class="tok">--highlight</div><div class="use">Realces curtos</div></div></div>
+  <div class="sw"><div class="chip" style="background:#E3F6F6"><span>#E3F6F6</span></div><div class="body"><div class="tok">--soft</div><div class="use">Fundo suave de seção</div></div></div>
+</div>
+
+<h3>Superfícies</h3>
+<div class="grid g4">
+  <div class="sw"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid #ACACAC"><span>#FFFFFF</span></div><div class="body"><div class="tok">--background</div><div class="use">Fundo padrão</div></div></div>
+  <div class="sw"><div class="chip" style="background:#2D2D2D"><span>#2D2D2D</span></div><div class="body"><div class="tok">--foreground</div><div class="use">Texto padrão</div></div></div>
+  <div class="sw"><div class="chip" style="background:#F5F5F5;border-bottom:1px solid #ACACAC"><span>#F5F5F5</span></div><div class="body"><div class="tok">--secondary / --muted</div><div class="use">Fundo alternativo</div></div></div>
+  <div class="sw"><div class="chip" style="background:rgba(45,45,45,.6)"><span>rgba(45,45,45,.6)</span></div><div class="body"><div class="tok">--muted-foreground</div><div class="use">Texto secundário</div></div></div>
+</div>
+
+<h3>Status</h3>
+<div class="grid g4">
+  <div class="sw"><div class="chip" style="background:#16A34A"><span>#16A34A</span></div><div class="body"><div class="tok">--success</div><div class="use">Sucesso, upload concluído</div></div></div>
+  <div class="sw"><div class="chip" style="background:#DC2626"><span>#DC2626</span></div><div class="body"><div class="tok">--destructive</div><div class="use">Erro, ação destrutiva</div></div></div>
+  <div class="sw"><div class="chip" style="background:#F59E0B"><span>#F59E0B</span></div><div class="body"><div class="tok">--warning</div><div class="use">Atenção · cards de Atalhos a 10%</div></div></div>
+</div>
+
+<h3>Linhas</h3>
+<div class="grid g4">
+  <div class="sw"><div class="chip" style="background:#8D0000"><span>#8D0000</span></div><div class="body"><div class="tok">--border</div><div class="use">Borda de card</div></div></div>
+  <div class="sw"><div class="chip" style="background:#ACACAC"><span>#ACACAC</span></div><div class="body"><div class="tok">--border-muted / --input</div><div class="use">Borda neutra, campo</div></div></div>
+  <div class="sw"><div class="chip" style="background:#F1D0C5"><span>#F1D0C5</span></div><div class="body"><div class="tok">--ring</div><div class="use">Halo de foco acessível</div></div></div>
+</div>
+
+<div class="note"><b>Acessibilidade:</b> contraste mínimo WCAG AA de 4,5:1 para texto. A cor nunca é o único indicador de estado — sempre combinada com ícone, rótulo ou padrão.</div>
+
+<h2><span class="n">2</span>Tipografia</h2>
+<p class="sub">Brand Display para títulos criativos e banners. Inter para o resto — nunca Brand Display em corpo de texto longo.</p>
+<table class="ts">
+  <tr><th>Tag</th><th>Amostra</th><th>Mobile (320)</th><th>Tablet (720)</th><th>Desktop (1400+)</th><th>Família</th></tr>
+  <tr><td><code>H1</code></td><td class="sample" style="font-family:var(--font-brand-display);font-size:3rem;line-height:1.1;letter-spacing:-.01em">Título</td><td>text-3xl</td><td>text-4xl</td><td>text-5xl</td><td>Brand Display</td></tr>
+  <tr><td><code>H2</code></td><td class="sample" style="font-family:var(--font-brand-display);font-size:2.25rem;line-height:1.2">Título</td><td>text-2xl</td><td>text-3xl</td><td>text-4xl</td><td>Brand Display / Inter</td></tr>
+  <tr><td><code>H3</code></td><td class="sample" style="font-size:1.875rem;font-weight:700">Título</td><td>text-xl</td><td>text-2xl</td><td>text-3xl</td><td>Inter</td></tr>
+  <tr><td><code>H4</code></td><td class="sample" style="font-size:1.5rem;font-weight:700">Título</td><td>text-lg</td><td>text-xl</td><td>text-2xl</td><td>Inter</td></tr>
+  <tr><td><code>H5</code></td><td class="sample" style="font-size:1.25rem;font-weight:700">Título</td><td>text-base</td><td>text-lg</td><td>text-xl</td><td>Inter</td></tr>
+  <tr><td><code>H6</code></td><td class="sample" style="font-size:1.125rem;font-weight:700">Título</td><td>text-sm</td><td>text-base</td><td>text-lg</td><td>Inter Bold</td></tr>
+  <tr><td><code>Body</code></td><td class="sample">Texto de corpo padrão</td><td>text-sm/6</td><td>text-base/7</td><td>text-base/7</td><td>Inter</td></tr>
+  <tr><td><code>Small</code></td><td class="sample" style="font-size:.875rem">Texto pequeno</td><td>text-xs</td><td>text-xs</td><td>text-sm</td><td>Inter</td></tr>
+</table>
+
+<h2><span class="n">3</span>Raio, sombra e espaçamento</h2>
+<h3>Border radius</h3>
+<div class="grid g4">
+  <div class="box" style="border-radius:2px">--radius-sm · 2px</div>
+  <div class="box" style="border-radius:4px">--radius-md · 4px</div>
+  <div class="box" style="border-radius:6px">--radius-lg · 6px</div>
+  <div class="box" style="border-radius:10px">--radius-xl · 10px</div>
+</div>
+<h3>Elevação</h3>
+<div class="grid g3">
+  <div class="shbox" style="box-shadow:0 3px 6px rgba(141,0,0,.20)">--shadow-sm</div>
+  <div class="shbox" style="box-shadow:0 6px 12px rgba(141,0,0,.20)">--shadow-lg</div>
+  <div class="shbox" style="box-shadow:0 0 0 3px #F1D0C5">--shadow-focus</div>
+</div>
+<h3>Container e gutter</h3>
+<div class="grid g4">
+  <div><div class="bar" style="width:15px"></div><div class="use" style="font-size:.75rem;margin-top:6px">container-sm · 15px</div></div>
+  <div><div class="bar" style="width:30px"></div><div class="use" style="font-size:.75rem;margin-top:6px">container-md · 30px</div></div>
+  <div><div class="bar" style="width:40px"></div><div class="use" style="font-size:.75rem;margin-top:6px">container-default · 40px</div></div>
+  <div><div class="bar" style="width:80px"></div><div class="use" style="font-size:.75rem;margin-top:6px">container-xl · 80px</div></div>
+</div>
+<h3>Breakpoints</h3>
+<div class="bp">
+  <div><b>320px</b>Small · mobile</div>
+  <div><b>720px</b>Medium · tablet</div>
+  <div><b>1400px</b>Default · desktop</div>
+  <div><b>1920px</b>Extra large</div>
+</div>
+<div class="note">As utilitárias <code>sm:</code> <code>md:</code> <code>lg:</code> do Tailwind disparam nos defaults dele (640/768/1024), <b>não</b> nos breakpoints do DS. Os do DS valem só nas media queries manuais de <code>tokens.css</code>.</div>
+
+<h2><span class="n">4</span>Botões</h2>
+<div class="demo">
+  <div class="row">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <a href="#" class="btn btn-tertiary">Tertiary link</a>
+    <button class="btn btn-secondary" disabled>Disabled</button>
+  </div>
+  <div class="note">Primary usa <code>--accent</code> com <code>--accent-foreground</code>, raio <code>--radius-lg</code>, sombra <code>--shadow-sm</code>, padding 12/24px, peso 700. Foco visível via <code>--shadow-focus</code> — tab para ver.</div>
+</div>
+
+<h2><span class="n">5</span>Float label input</h2>
+<div class="demo">
+  <div class="row" style="align-items:flex-start">
+    <div class="ff"><input id="a" placeholder=" "><label for="a">Nome completo</label></div>
+    <div class="ff"><input id="b" placeholder=" " value="preenchido"><label for="b">Campo preenchido</label></div>
+    <div><div class="ff" data-invalid><input id="c" placeholder=" " value="valor inválido"><label for="c">Campo com erro</label></div>
+      <div class="hint">Mensagem de validação</div></div>
+  </div>
+  <div class="note">Altura 56px. O rótulo flutua para 11px / peso 700 / <code>--primary</code> quando o campo está preenchido ou em foco. Estado inválido usa <code>--destructive</code> na borda e no rótulo, mais <code>data-invalid="true"</code> — a cor não é o único indicador.</div>
+</div>
+
+<h2><span class="n">6</span>Cards</h2>
+<div class="grid g3">
+  <div class="dscard"><h4>Card padrão</h4><p>Borda em <code>--primary</code>, raio <code>--radius-lg</code>, sombra <code>--shadow-sm</code>. Padding 20 / 24 / 32px conforme o breakpoint.</p></div>
+  <div class="dscard quick"><h4>Card de Atalhos</h4><p>Fundo <code>--warning</code> a <b>10% de opacidade</b>. Exclusivo de cards de Atalhos e Passo a Passo — nunca use o âmbar em opacidade cheia.</p></div>
+  <div class="dscard"><h4>Passo 1 de 4</h4><p>Um único indicador de passo por tela. Não repetir a contagem em eyebrow e texto ao mesmo tempo.</p></div>
+</div>
+
+<h2><span class="n">7</span>Alerts e mensagens</h2>
+<div class="demo" style="display:grid;gap:12px">
+  <div class="alert a-warn"><span class="ico">⚠</span><div><b>Atenção:</b> envie os documentos pendentes.</div></div>
+  <div class="alert a-info"><span class="ico">ℹ</span><div>Para consultar serviços anteriores à data de corte da migração, acesse o histórico.</div></div>
+  <div class="alert a-err"><span class="ico">✕</span><div><b>Erro no upload</b> — o arquivo excede o tamanho permitido.</div></div>
+  <div class="alert a-ok"><span class="ico">✓</span><div><b>Sucesso!</b> Envio concluído.</div></div>
+</div>
+
+<h2><span class="n">8</span>Badges de status</h2>
+<div class="demo">
+  <div class="row">
+    <span class="badge" style="background:#F5F5F5;color:#2D2D2D">Pendente</span>
+    <span class="badge" style="background:rgba(245,158,11,.15);color:#8a5a00">Chamado</span>
+    <span class="badge" style="background:#8D0000;color:#fff">Em atendimento</span>
+    <span class="badge" style="background:rgba(22,163,74,.15);color:#116634">Atendido</span>
+    <span class="badge" style="background:rgba(220,38,38,.12);color:#a01b1b">Ausente</span>
+    <span class="badge" style="background:rgba(45,45,45,.08);color:rgba(45,45,45,.6)">Encerrado</span>
+  </div>
+  <div class="note">10 estados no domínio de senha/ticket contra 6 variantes da primitiva <code>Badge</code>. Cada estado combina ícone ou rótulo além da cor — a cor nunca decide sozinha.</div>
+</div>
+
+<h2><span class="n">9</span>Accordion e arrows</h2>
+<div class="demo">
+  <details open><summary>Quais tipos de benefícios e ofertas estão disponíveis no programa?</summary><p>Chevron em <code>--primary</code>, fundo <code>--background</code>. Um item aberto por vez.</p></details>
+  <details><summary>Como altero meus dados cadastrais?</summary><p>Conteúdo do segundo item.</p></details>
+  <details><summary>Onde acompanho minhas solicitações?</summary><p>Conteúdo do terceiro item.</p></details>
+  <div class="row" style="margin-top:20px">
+    <button class="arrow">‹</button>
+    <button class="arrow">›</button>
+    <button class="arrow" disabled>›</button>
+    <span style="font-size:.85rem;color:var(--muted-foreground)">40×40px, raio <code>--radius-lg</code>, borda e ícone em <code>--primary</code></span>
+  </div>
+</div>
+
+<footer>
+  Acme Design System V2 · showcase gerado em 03/09/2026 a partir de <code>DESIGN.md</code> e <code>DS-ACME.md</code>.<br>
+  Brand Display representada por Bricolage Grotesque — a família real do DS não é uma fonte pública.
+</footer>
+
+</div>
+</body>
+</html>
