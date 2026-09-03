@@ -64,14 +64,15 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 |---|---|
 | `escrever-plano` | transformar pedido vago em `PLANO.md` com critério de negócio |
 | `dados-sensiveis` | LGPD Art. 11, vazamento por URL/evento, ANS |
-| `next-padroes` | server/client, server action com zod e sessão, Tailwind v4, CSV, erro legível |
+| `next-padroes` | server/client, server action com zod e sessão, Tailwind v4, design system, CSV, erro legível |
 | `consultar-banco` | Prisma: o que pode escrever, teto de linhas, migração, PII mascarada |
 
 ## Subagents
 
 O valor está na restrição de ferramentas, não na persona.
 
-- `revisor` — `Read, Grep, Glob, Bash`. Não corrige enquanto revisa.
+- `revisor` — `Read, Grep, Glob, Bash`. Não corrige enquanto revisa. Audita
+  também desvio do design system: hex solto, cor arbitrária, token órfão.
 - `analista-dados` — mesma coisa, para pergunta sobre dado. Nunca imprime PII
   identificada no chat.
 
@@ -120,6 +121,31 @@ O scaffold sobe com 200 registros de exemplo já no banco e sem exigir login
 enquanto o `.env` estiver vazio — a pessoa vê a tela cheia no primeiro minuto,
 e gravar funciona de verdade desde o começo. `exigirSessao()` recusa rodar sem
 login em produção, então isso não vira uma aplicação interna aberta na internet.
+
+## Design system
+
+O scaffold nasce com um design system em `docs/design-system/`, e o `@theme` do
+`app/globals.css` é o espelho dele — cada token traz o de-para em comentário
+(`--color-marca` ↔ `DS --primary`).
+
+| Arquivo | Leitor | O que tem |
+|---|---|---|
+| `docs/design-system/DESIGN.md` | agente | YAML com paleta, tipografia, raio, sombra, espaçamento e a receita de cada componente |
+| `docs/design-system/DS-ACME.md` | pessoa | anatomia de componente, do/don't, acessibilidade |
+| `app/globals.css` | Tailwind | os mesmos valores com nome em português, virando utilitária |
+
+Duas perguntas diferentes, dois arquivos: *qual é o valor* é pergunta de
+máquina, *como eu uso* é pergunta de gente. Num arquivo só, o agente gasta
+contexto lendo prosa e a pessoa caça a regra no meio de uma tabela de tokens.
+
+O que isso muda na prática: o `/construir` lê o `DESIGN.md` antes de escrever
+tela, e o `/revisar` reprova hex solto na classe, cor arbitrária do Tailwind
+(`bg-blue-600`) e token novo no `@theme` sem par no DS — que é como nasce uma
+segunda paleta. Design system que ninguém verifica vira documento morto.
+
+A marca é fictícia, e é para ser trocada. Empresa com DS próprio substitui os
+dois arquivos e ajusta o `@theme`. Nenhum componente muda: `page.tsx` e
+`button.tsx` não conhecem hex, só utilitária de token.
 
 ## Escopo que falta
 

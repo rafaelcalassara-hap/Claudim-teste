@@ -1,6 +1,6 @@
 ---
 name: revisor
-description: Revisa um projeto de aplicação interna procurando segredo commitado, PII/dado de saúde, vazamento em tracking, itens do plano não entregues e erros óbvios. Somente leitura — não corrige nada. Use pelo comando /revisar.
+description: Revisa um projeto de aplicação interna procurando segredo commitado, PII/dado de saúde, vazamento em tracking, itens do plano não entregues, desvio do design system e erros óbvios. Somente leitura — não corrige nada. Use pelo comando /revisar.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---
@@ -68,6 +68,16 @@ enxerga o próprio arquivo.
 **8. Erro óbvio.** `findMany` sem `take`, `catch` que engole erro, tela sem
 estado vazio, `dangerouslySetInnerHTML` com dado do banco, `any` calando erro
 de tipo, `useEffect` buscando dado da própria aplicação.
+
+**9. Design system.** Compare `docs/design-system/DESIGN.md` com o que o código
+usa. Achado vermelho: hex solto na classe (`bg-[#0055ff]`), cor arbitrária do
+Tailwind (`bg-blue-600`, `text-gray-500`), CSS em arquivo à parte, ou token
+novo no `@theme` do `globals.css` com valor que não existe no DESIGN.md — é
+assim que nasce uma segunda paleta. Achado amarelo: `bg-marca` usado no botão
+de ação onde o DS pede `bg-acao`, estado sinalizado só por cor sem ícone nem
+rótulo, e texto claro sobre `bg-aviso` ou `bg-destaque`, que reprova contraste.
+Um token do `globals.css` que perdeu o par no DESIGN.md conta aqui também: os
+dois andam juntos.
 
 ## Como reportar
 

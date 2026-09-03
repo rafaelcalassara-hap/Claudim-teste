@@ -2,19 +2,35 @@
 
 /* Tailwind v4: o tema é declarado aqui, não em tailwind.config.js.
    Cada token vira uma classe utilitária (--color-marca → bg-marca).
-   Mudou a cor da marca? Muda aqui, uma vez, e a aplicação inteira segue. */
-@theme {
-  --color-fundo: oklch(99% 0 0);
-  --color-superficie: oklch(100% 0 0);
-  --color-borda: oklch(92% 0.004 250);
-  --color-texto: oklch(24% 0.01 250);
-  --color-texto-suave: oklch(52% 0.012 250);
-  --color-marca: oklch(53% 0.16 250);
-  --color-marca-suave: oklch(96% 0.02 250);
-  --color-alerta: oklch(58% 0.16 40);
+   Mudou a cor da marca? Muda aqui, uma vez, e a aplicação inteira segue.
 
-  --radius-padrao: 0.625rem;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+   Os VALORES abaixo vêm do design system em `docs/design-system/DESIGN.md`.
+   Os NOMES são os desta aplicação, em português. O de-para está logo abaixo
+   de cada token. Trocar de design system é trocar os valores aqui — nenhum
+   componente muda, porque nenhum componente conhece hex. */
+@theme {
+  /* superfícies */
+  --color-fundo: #FFFFFF;              /* DS --background  */
+  --color-superficie: #FFFFFF;         /* DS --card        */
+  --color-borda: #ACACAC;              /* DS --border-muted */
+  --color-texto: #2D2D2D;              /* DS --foreground  */
+  --color-texto-suave: rgba(45, 45, 45, 0.6); /* DS --muted-foreground */
+
+  /* marca */
+  --color-marca: #8D0000;              /* DS --primary        */
+  --color-marca-escura: #4D1D00;       /* DS --primary-darker — hover/pressionado */
+  --color-marca-suave: #E3F6F6;        /* DS --soft           */
+  --color-acao: #009E90;               /* DS --accent — CTA principal */
+  --color-destaque: #4EE0FF;           /* DS --highlight — badge, pílula */
+
+  /* estado */
+  --color-alerta: #DC2626;             /* DS --destructive */
+  --color-sucesso: #16A34A;            /* DS --success     */
+  --color-aviso: #F59E0B;              /* DS --warning     */
+  --color-foco: #F1D0C5;               /* DS --ring        */
+
+  --radius-padrao: 6px;                /* DS --radius-lg */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @layer base {
@@ -22,5 +38,11 @@
     background-color: var(--color-fundo);
     color: var(--color-texto);
     font-family: var(--font-sans);
+  }
+
+  /* O DS exige foco visível em tudo que recebe teclado. */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-foco);
   }
 }

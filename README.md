@@ -16,7 +16,14 @@ instalou. É esse o motivo de ser plugin e não template repo.
 
 | Plugin | Para quem | O que faz |
 |---|---|---|
-| `claudim` | marketing, growth, dados, operações | cria aplicações internas em Next.js + Prisma + SQLite, com sessão pelo Clerk e guardrails de LGPD e ANS impostos por hook |
+| `claudim` | marketing, growth, dados, operações | cria aplicações internas em Next.js + Prisma + SQLite, com sessão pelo Clerk, design system tokenizado e guardrails de LGPD e ANS impostos por hook |
+
+## Design system
+
+O `claudim` nasce com um design system em dois arquivos — um para agente ler,
+outro para pessoa ler — e o tema do Tailwind é o espelho dele. A referência do
+padrão está em [`ds-acme/`](./ds-acme/), com um showcase HTML dos tokens e
+componentes. A marca é fictícia e existe para ser trocada pela da empresa.
 
 ## Antes de publicar uma versão
 

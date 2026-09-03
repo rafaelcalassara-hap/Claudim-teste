@@ -1,6 +1,6 @@
 ---
 name: next-padroes
-description: Padrões obrigatórios de código Next.js neste stack — App Router, Server Components, server actions com zod e checagem de sessão, Tailwind v4, shadcn/ui, exportação CSV, tratamento de erro legível para quem não é técnico. Use ao criar ou alterar qualquer tela, componente ou action da aplicação.
+description: Padrões obrigatórios de código Next.js neste stack — App Router, Server Components, server actions com zod e checagem de sessão, Tailwind v4, shadcn/ui, design system tokenizado em docs/design-system, exportação CSV, tratamento de erro legível para quem não é técnico. Use ao criar ou alterar qualquer tela, componente, cor, classe Tailwind ou action da aplicação.
 ---
 
 # Next.js — como escrevemos aqui
@@ -148,6 +148,31 @@ gera `bg-marca` e `text-marca`; `--radius-padrao` gera `rounded-padrao`.
 - Cor nova, espaçamento novo: adicione um token no `@theme` e use o utilitário.
 - Não escreva hex solto na classe (`bg-[#0055ff]`) nem CSS em arquivo à parte.
 - Não instale `tailwind.config.js`, plugin de tema, nem outra lib de CSS.
+
+## Design system
+
+`docs/design-system/DESIGN.md` é a fonte da verdade dos valores. Ele tem a
+paleta, a tipografia, os raios, as sombras e a receita de cada componente, em
+YAML no topo do arquivo. **Leia antes de escrever tela ou componente.**
+
+O `@theme` do `globals.css` é o espelho dele com nomes em português — cada
+token traz o de-para em comentário (`--color-marca` ↔ `DS --primary`). Os dois
+andam juntos: mudou um, muda o outro no mesmo passo.
+
+- Precisa de uma cor que já existe no DS? Use o token que a espelha. Não
+  crie um segundo token para a mesma cor.
+- Precisa de uma cor que **não** existe no DS? Não invente no `globals.css`.
+  Diga ao usuário qual valor falta e por quê — o DS é decisão de design, não
+  de implementação.
+- `bg-marca` para identidade, `bg-acao` para o botão que a pessoa deve clicar.
+  Errar isso deixa a tela com dois primários brigando.
+- Estado nunca é só cor. Vermelho sem ícone e sem rótulo não passa em
+  daltonismo — combine cor com texto ou ícone, sempre.
+- Contraste mínimo 4,5:1 para texto. Sobre `bg-marca` e `bg-acao`, texto
+  branco. Sobre `bg-aviso` e `bg-destaque`, texto escuro (`text-texto`).
+
+`DS-ACME.md`, na mesma pasta, tem a anatomia de cada componente em prosa —
+consulte quando a dúvida for *como montar*, não *qual valor usar*.
 
 ## shadcn/ui
 

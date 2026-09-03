@@ -14,6 +14,9 @@ allowed-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, Skill, TodoWrite
 ## Enquanto constrói
 
 - Siga a skill `next-padroes` para qualquer tela, componente ou action.
+- Vai criar tela, componente, cor ou classe Tailwind? Leia
+  `docs/design-system/DESIGN.md` **antes** de escrever, não depois. Valor de
+  cor, raio e sombra sai de lá — não do seu gosto.
 - Toque em CPF, carteirinha, beneficiário, diagnóstico, URL ou tracking?
   Invoque `dados-sensiveis` **antes** de escrever, não depois.
 - Consulta, schema ou migração: skill `consultar-banco`. Tabela de sistema

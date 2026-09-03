@@ -25,5 +25,18 @@ Mudou o design system — token novo, variante nova, primitiva nova — os **doi
 atualizados no mesmo PR, mais uma história no Storybook. Um arquivo desatualizado é pior que
 arquivo nenhum: parece verdade e não é.
 
-A fonte de verdade executável não é nenhum dos dois — é o CSS que o build compila
-(`packages/tokens/src/tokens.css`). Os dois `.md` são espelhos dele. Quando divergirem, o CSS ganha.
+A fonte de verdade executável não é nenhum dos dois — é o CSS que o build compila.
+Os dois `.md` são espelhos dele. Quando divergirem, o CSS ganha.
+
+## Onde isso é usado neste repo
+
+Esta pasta é a **vitrine do padrão**: é aqui que se lê o que ele é, e o showcase HTML
+mostra os tokens aplicados.
+
+A cópia que o plugin `claudim` distribui vive em
+[`plugins/claudim/templates/docs/design-system/`](../plugins/claudim/templates/docs/design-system/).
+O `/comecar` a copia para dentro de cada aplicação criada, porque o app gerado é outro
+projeto — ele não enxerga esta pasta. É de lá que o `/construir` lê antes de escrever
+tela, e é contra ela que o `/revisar` audita.
+
+Os dois `.md` são iguais nos dois lugares. Mudou um, muda o outro no mesmo commit.

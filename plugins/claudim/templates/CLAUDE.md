@@ -22,7 +22,8 @@ exportação.
 |---|---|
 | `app/page.tsx` | a tela (Server Component: busca no servidor) |
 | `app/acoes.ts` | server actions — zod valida, depois checa a sessão |
-| `app/globals.css` | tokens de tema do Tailwind v4, no bloco `@theme` |
+| `app/globals.css` | tokens de tema do Tailwind v4, no bloco `@theme` — espelho do design system |
+| `docs/design-system/` | o design system: `DESIGN.md` tem os valores, `DS-ACME.md` a anatomia |
 | `components/` | componentes React seus |
 | `components/ui/` | primitivos do shadcn/ui (`npx shadcn@latest add ...`) |
 | `lib/config.ts` | login configurado no `.env` + quem pode entrar |
@@ -45,6 +46,7 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
 | Situação | Skill |
 |---|---|
 | Escrever ou alterar tela, componente ou server action | `next-padroes` |
+| Escolher cor, raio, sombra, espaçamento ou classe Tailwind | `next-padroes` + `docs/design-system/DESIGN.md` |
 | Qualquer consulta, schema ou migração do Prisma | `consultar-banco` |
 | CPF, carteirinha, beneficiário, diagnóstico, tracking, URL de campanha, copy de plano | `dados-sensiveis` |
 | Definir ou revisar escopo | `escrever-plano` |
@@ -68,3 +70,6 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
   `"use client"`. O que vai por prop, vai inteiro no payload da página.
 - Toda consulta de lista tem `take` (teto de linhas).
 - Erro na tela em português, sem stack trace.
+- **Cor, raio e sombra saem de `docs/design-system/DESIGN.md`** — nunca de hex
+  na classe nem de cor arbitrária do Tailwind. O `@theme` do `globals.css` é o
+  espelho dele; os dois mudam no mesmo passo.
