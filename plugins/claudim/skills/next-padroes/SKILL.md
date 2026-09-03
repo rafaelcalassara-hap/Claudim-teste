@@ -15,9 +15,10 @@ não troque de biblioteca de UI e não troque de banco.
 ```
 app/page.tsx        # a tela — Server Component
 app/acoes.ts        # server actions ("use server" no topo)
-app/globals.css     # tokens do tema, no bloco @theme
+app/globals.css     # tokens do tema — GERADO do design system
 prisma/dev.db       # o banco, um arquivo (fora do git)
 app/entrar/         # a única rota pública — login do Clerk
+docs/design-system/ # DESIGN.md: a fonte dos valores de tema
 app/<rota>/page.tsx # telas extras
 components/         # componentes seus
 components/ui/      # primitivos do shadcn/ui
@@ -163,8 +164,8 @@ O `app/globals.css` é **gerado** dele:
 python3 docs/design-system/gerar-tema.py
 ```
 
-- **Não edite o `globals.css` à mão.** A próxima execução do gerador
-  sobrescreve, e a checagem acusa antes disso.
+- **Não edite o `globals.css` à mão.** Um hook bloqueia a escrita, e a próxima
+  execução do gerador sobrescreveria de qualquer forma.
 - O nome da utilitária é o nome do token, sem tradução no meio:
   `--color-primary` gera `bg-primary`, `--radius-lg` gera `rounded-lg`,
   `--shadow-sm` gera `shadow-sm`. Não existe um segundo vocabulário.

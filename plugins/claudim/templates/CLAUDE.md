@@ -22,7 +22,7 @@ exportação.
 |---|---|
 | `app/page.tsx` | a tela (Server Component: busca no servidor) |
 | `app/acoes.ts` | server actions — zod valida, depois checa a sessão |
-| `app/globals.css` | **gerado** do design system — não edite à mão |
+| `app/globals.css` | **gerado** do design system — hook bloqueia edição à mão |
 | `docs/design-system/` | o design system. `DESIGN.md` é a **única** fonte dos valores de tema |
 | `components/` | componentes React seus |
 | `components/ui/` | primitivos do shadcn/ui (`npx shadcn@latest add ...`) |

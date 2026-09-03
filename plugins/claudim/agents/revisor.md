@@ -73,8 +73,9 @@ de tipo, `useEffect` buscando dado da própria aplicação.
 `python3 docs/design-system/gerar-tema.py --checar` e reporte o que ele
 apontar: derivado editado à mão que não corresponde mais ao `DESIGN.md`, ou
 `.tsx` usando classe de tema sem token. Ele sai com 1 e nomeia arquivo e
-classe. Achado vermelho também para hex solto (`bg-[#0055ff]`), cor arbitrária
-do Tailwind (`bg-blue-600`, `text-gray-500`) e CSS em arquivo à parte. Achado
+classe. O `guard_ds.py` já bloqueia isso na escrita, então achado aqui costuma
+significar arquivo que entrou por fora do hook — `git mv`, patch aplicado, ou
+código anterior à adoção do design system. Achado
 amarelo: `bg-primary` no botão de ação onde o DS pede `bg-accent`, estado
 sinalizado só por cor sem ícone nem rótulo, e texto claro sobre `bg-warning`
 ou `bg-highlight`, que reprova contraste. Se a checagem passar limpa, não

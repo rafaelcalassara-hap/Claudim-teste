@@ -18,6 +18,11 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_auth.py\"",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard_ds.py\"",
+            "timeout": 15
           }
         ]
       },

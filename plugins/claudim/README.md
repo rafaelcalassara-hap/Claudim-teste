@@ -33,6 +33,15 @@ Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 - condição de saúde em fixture, seed ou CSV de exemplo
 - condição de saúde dentro de chamada de tracking/pixel/dataLayer
 
+**PreToolUse · Write/Edit** (`guard_ds.py`)
+- cor escrita direto no componente: `bg-[#0055ff]`, hex em `style={{...}}`
+- cor da paleta genérica do Tailwind: `bg-blue-600`, `text-gray-500`
+- classe de tema sem token no `DESIGN.md` — a utilitária nem existiria
+- editar `app/globals.css`, que é arquivo gerado
+
+*Só age em projeto que tem `docs/design-system/DESIGN.md`. Sem design system,
+não atrapalha.*
+
 **PreToolUse · Write/Edit** (`guard_auth.py`)
 - recriar tela de autocadastro: rota `criar-conta`/`sign-up`, `<SignUp />`
 - coluna de senha, hash de senha (`bcrypt`, `argon2`) ou token de recuperação
@@ -141,12 +150,18 @@ O nome da utilitária é o nome do token, sem tradução no meio:
 `page.tsx` e `button.tsx` não conhecem hex — trocar o tema é editar o
 `DESIGN.md` e rodar o gerador.
 
-`gerar-tema.py --checar` é o gate, e sai com 1 quando um derivado foi editado
-à mão ou quando um `.tsx` usa classe de tema sem token (`bg-azul`,
-`bg-blue-600`). O `/construir` roda no fim de cada rodada e o `/revisar`
-reporta o que ele apontar. Design system que ninguém verifica vira documento
-morto: antes deste arranjo o guia citava um `--color-high-contrast` que nunca
-existiu e o showcase tinha três cores inventadas na mão.
+Dois níveis de verificação, porque guardrail que só avisa não serve:
+
+- **`guard_ds.py` bloqueia na hora da escrita** — cor literal, cor do Tailwind,
+  classe sem token, edição do `globals.css` gerado. Exit 2, com o token certo
+  na mensagem.
+- **`gerar-tema.py --checar` fecha a rodada** — pega o que o hook não vê, como
+  derivado que ficou fora de sincronia. Roda no `/construir`, no `/revisar` e
+  no checklist de release.
+
+Design system que ninguém verifica vira documento morto: antes deste arranjo o
+guia citava um `--color-high-contrast` que nunca existiu e o showcase tinha
+três cores inventadas na mão.
 
 A marca é fictícia e existe para ser trocada.
 
