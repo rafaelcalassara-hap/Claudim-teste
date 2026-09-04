@@ -21,35 +21,41 @@ O laço normal é `/construir` → `/revisar` até ficar bom.
 
 Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 
-**PreToolUse · Write/Edit** (`guard_write.py`)
+Os quatro primeiros entram por uma porta só, `guard_edicao.py`: um processo
+Python por edição em vez de quatro, e o primeiro achado bloqueia — uma mensagem,
+não três de uma vez.
+
+**Write/Edit · segredo e processo** (`guard_write.py`)
 - escrever `.env`, `*.pem`, `*.key`, `credentials*`, chave de service account
 - senha, chave de API ou token colados dentro do código
 - segredo atrás de `NEXT_PUBLIC_` — esse prefixo publica o valor no navegador
 - escrever qualquer código-fonte antes de existir `PLANO.md` *(só em projeto
   criado pelo `/comecar` — fora dele, não atrapalha)*
 
-**PreToolUse · Write/Edit** (`guard_pii.py`)
+**Write/Edit · dado sensível** (`guard_pii.py`)
 - CPF ou CNS com dígito verificador **válido** dentro de arquivo
 - condição de saúde em fixture, seed ou CSV de exemplo
 - condição de saúde dentro de chamada de tracking/pixel/dataLayer
 
-**PreToolUse · Write/Edit** (`guard_ds.py`)
+**Write/Edit · modelo de acesso** (`guard_auth.py`)
+- recriar tela de autocadastro: rota `criar-conta`/`sign-up`, formulário de
+  cadastro
+- coluna de senha, hash de senha (`bcrypt`, `argon2`) ou token de recuperação
+- biblioteca de e-mail junto de assunto de senha — o e-mail de recuperação é da
+  conta Google
+- outra biblioteca de sessão (`@clerk/*`, `better-auth`, `lucia`, `iron-session`)
+- provider `Credentials` do next-auth — é ele que traz a senha de volta para cá
+- rota nova no `PUBLICO` do `middleware.ts` — só `/entrar` e `/api/auth` são
+  públicas
+- `exigirSessao()` ou o callback `signIn` reescrito sem `emailPermitido()`
+
+**Write/Edit · design system** (`guard_ds.py`)
 - cor escrita direto no componente: `bg-[#0055ff]`, hex em `style={{...}}`
 - cor da paleta genérica do Tailwind: `bg-blue-600`, `text-gray-500`
 - classe de tema sem token no `DESIGN.md` — a utilitária nem existiria
 - editar `app/globals.css`, que é arquivo gerado
-
-*Só age em projeto que tem `docs/design-system/DESIGN.md`. Sem design system,
-não atrapalha.*
-
-**PreToolUse · Write/Edit** (`guard_auth.py`)
-- recriar tela de autocadastro: rota `criar-conta`/`sign-up`, `<SignUp />`
-- coluna de senha, hash de senha (`bcrypt`, `argon2`) ou token de recuperação
-- biblioteca de e-mail junto de assunto de senha — o e-mail de recuperação é do
-  Clerk
-- outra biblioteca de sessão (`next-auth`, `better-auth`, `lucia`, `iron-session`)
-- rota nova no `createRouteMatcher` do `middleware.ts` — só `/entrar` é pública
-- `exigirSessao()` reescrito sem a checagem de `emailPermitido()`
+- *só age em projeto que tem `docs/design-system/DESIGN.md`; sem design
+  system, não atrapalha*
 
 **PreToolUse · Bash** (`guard_bash.py`)
 - `git push` para `main`/`master`, e push forçado
@@ -59,9 +65,19 @@ não atrapalha.*
 - `vercel --prod` e `vercel promote` — publicar não faz parte do processo ainda
 - `rm` de arquivo `.db` — isso é o banco inteiro da aplicação
 
-**PostToolUse · Write/Edit** (`post_format.py`)
+**PostToolUse · Write/Edit** (`pos_edicao.py`, chama os dois abaixo nesta
+ordem — assim o eslint sempre vê o arquivo já formatado)
+
+**Formatar** (`post_format.py`)
 - `prettier --write` em `.ts/.tsx/.css/.json/.md`, usando o prettier do próprio
   projeto. Silencioso. Nunca bloqueia.
+
+**Lintar** (`post_lint.py`)
+- `eslint --fix` no arquivo recém-escrito. O que o `--fix` resolve, ele resolve
+  calado; o que sobra volta **para o modelo** por exit 2 — nunca para a tela do
+  usuário. É a diferença que faz esse hook ser usável aqui: quem lê
+  `no-explicit-any` é quem sabe o que fazer com isso, e o público-alvo não vê
+  erro de lint nenhum. Sem eslint instalado ou sem config, sai calado.
 
 **SessionStart** (`session_state.py`)
 - injeta estado: passos abertos do `PLANO.md`, branch, alterações não
@@ -73,7 +89,7 @@ não atrapalha.*
 |---|---|
 | `escrever-plano` | transformar pedido vago em `PLANO.md` com critério de negócio |
 | `dados-sensiveis` | LGPD Art. 11, vazamento por URL/evento, ANS |
-| `next-padroes` | server/client, server action com zod e sessão, Tailwind v4, design system, CSV, erro legível |
+| `next-padroes` | server/client e o que vale sempre. O detalhe está em `references/`, lido só quando o assunto aparece: `dados.md`, `acoes.md`, `acesso.md`, `ui.md`, e `ui.md` traz o design system: qual arquivo abrir para cada intenção |
 | `consultar-banco` | Prisma: o que pode escrever, teto de linhas, migração, PII mascarada |
 
 ## Subagents
@@ -81,7 +97,8 @@ não atrapalha.*
 O valor está na restrição de ferramentas, não na persona.
 
 - `revisor` — `Read, Grep, Glob, Bash`. Não corrige enquanto revisa. Audita
-  também desvio do design system: hex solto, cor arbitrária, token órfão.
+  também o design system: token (via `gerar-tema.py --checar`) e anatomia
+  (contra `DS-ACME.md` §7).
 - `analista-dados` — mesma coisa, para pergunta sobre dado. Nunca imprime PII
   identificada no chat.
 
@@ -96,20 +113,62 @@ aplicação concede acesso editando uma linha do `.env`:
 EMAILS_PERMITIDOS=@empresa.com.br,pessoa@parceiro.com
 ```
 
-Três camadas: `middleware.ts` deixa pública só `/entrar`; `exigirSessao()` roda
-em toda página e toda action, porque action não é rota; e a lista acima decide
-quem passa. Ter conta no Clerk não é ter acesso — o Clerk autentica qualquer um
-que se cadastre, a lista é quem autoriza. **Lista vazia não libera ninguém**, de
-propósito: o erro caro aqui é a aplicação interna abrir para a internet.
+Três camadas: `middleware.ts` deixa públicas só `/entrar` e `/api/auth`;
+`exigirSessao()` roda em toda página e toda action, porque action não é rota; e
+a lista acima decide quem passa. Ter conta Google da empresa não é ter acesso —
+a lista é quem autoriza, e ela é conferida duas vezes: no callback `signIn`, na
+hora de entrar, e no `exigirSessao()`, a cada requisição, para quem sai da lista
+perder o acesso sem esperar o cookie vencer. **Lista vazia não libera ninguém**,
+de propósito: o erro caro aqui é a aplicação interna abrir para a internet.
 
-Senha, cadastro e recuperação são telas do Clerk. Esta aplicação nunca guarda
-senha, não tem tabela de usuário e não manda e-mail. A instância do Clerk fica
-em "Restricted" no painel — sem isso, autocadastro continua aberto.
+Senha, cadastro e recuperação são da conta Google. Esta aplicação nunca guarda
+senha, não tem tabela de usuário e não manda e-mail — a sessão é um cookie
+assinado, sem `adapter` e sem linha no banco. O parâmetro `hd` na tela do Google
+só sugere a conta da empresa; é a lista que barra, não ele.
+
+## Estilo de código
+
+Duas ferramentas, uma decisão cada: **prettier** decide a forma, **eslint**
+decide o que é erro. `eslint-config-prettier` desliga toda regra do eslint que
+opinasse sobre forma, para as duas não brigarem. O par roda por hook, a cada
+arquivo salvo — não há passo manual e o usuário não vê saída nenhuma.
+
+TypeScript fica em `strict: true` e para por aí. Nada de
+`noUncheckedIndexedAccess` ou `exactOptionalPropertyTypes`: uma parede de erro
+de tipo que o público-alvo não sabe ler é exatamente o modo de falha que este
+plugin existe para evitar. O que o eslint acrescenta ao `strict` é a regra com
+consequência conhecida — `no-explicit-any`, `findMany` sem `take`,
+`useEffect`+`fetch`, `react/no-danger` — não preferência de estilo.
+
+As regras que precisam de tipo ficam separadas em `eslint.config.revisao.mjs` e
+só o `/revisar` as roda: elas montam o programa inteiro antes de analisar, lento
+demais para um hook por arquivo. É lá que mora `no-floating-promises` — a
+escrita no banco sem `await`, que nem o `tsc` nem abrir a tela pegam.
+
+## Uma tabela, um arquivo
+
+Consulta do Prisma mora em `lib/dados/<tabela>.ts`, nunca dentro de `page.tsx`
+nem de `acoes.ts`. Não é MVC: no App Router, o Server Component já é view e
+controller, a action já é o controller de escrita e o Prisma já é o model —
+criar `controllers/` ou `viewmodels/` só duplicaria o que já existe.
+
+O que essa camada compra é concreto: `take`, `select` explícito, mascaramento e
+conversão de centavos ficam **juntos, num arquivo por tabela**. Espalhados por
+página e action, os quatro dependem de alguém lembrar de cada um toda vez; num
+lugar só, o `/revisar` tem onde olhar e o `grep` por `db.` fora de `lib/dados/`
+acha o que escapou.
+
+O limite é explícito na skill: funções `async` exportadas, e nada além. Sem
+classe, sem repositório genérico, sem interface, sem par entidade/DTO. Como o
+mascaramento é obrigatório, só existe uma forma de saída legal — a mascarada —
+então não há camada de conversão para inventar. Tabela nova é arquivo novo,
+nunca camada nova.
 
 ## Stack fixo
 
-Next.js (App Router) · React + Tailwind v4 + shadcn/ui · Clerk para sessão ·
-Prisma + SQLite. O plugin não pergunta e não oferece alternativa.
+Next.js (App Router) · React + Tailwind v4 + shadcn/ui · next-auth com a conta
+Google da empresa · Prisma + SQLite. O plugin não pergunta e não oferece
+alternativa.
 
 Três consequências que valem dizer em voz alta:
 
@@ -141,9 +200,9 @@ vivem lá e em nenhum outro lugar.
 |---|---|---|
 | `docs/design-system/DESIGN.md` | **qual é o valor.** YAML com cor, tipografia, raio, sombra, espaçamento, receita de componente | como usar |
 | `docs/design-system/DS-ACME.md` | **como usar.** Anatomia de 22 componentes, variantes, estados, faça/não faça, acessibilidade | valor — cita token por nome, nunca por hex |
-| `docs/design-system/gerar-tema.py` | lê o `DESIGN.md` e escreve os derivados |
-| `app/globals.css` | **gerado** — o `@theme` do Tailwind |
-| `docs/design-system/showcase.html` | **gerado** — os tokens renderizados |
+| `docs/design-system/gerar-tema.py` | lê o `DESIGN.md` e escreve os derivados | |
+| `app/globals.css` | **gerado** — o `@theme` do Tailwind | |
+| `docs/design-system/showcase.html` | **gerado** — os tokens renderizados | |
 
 Cada instrução do plugin aponta os dois pela pergunta que respondem: "preciso
 de uma cor" → `DESIGN.md`; "vou montar um card" → `DS-ACME.md` §7. Um agente
@@ -152,21 +211,17 @@ foi o furo que este arranjo fecha.
 
 O nome da utilitária é o nome do token, sem tradução no meio:
 `--color-primary` gera `bg-primary`. Não existe um segundo vocabulário, e
-`page.tsx` e `button.tsx` não conhecem hex — trocar o tema é editar o
+nenhum componente do template conhece hex — trocar o tema é editar o
 `DESIGN.md` e rodar o gerador.
 
 Dois níveis de verificação, porque guardrail que só avisa não serve:
 
 - **`guard_ds.py` bloqueia na hora da escrita** — cor literal, cor do Tailwind,
-  classe sem token, edição do `globals.css` gerado. Exit 2, com o token certo
-  na mensagem.
+  classe sem token, edição do `globals.css` gerado. Entra pela porta única do
+  `guard_edicao.py`, depois do `guard_auth`.
 - **`gerar-tema.py --checar` fecha a rodada** — pega o que o hook não vê, como
   derivado que ficou fora de sincronia. Roda no `/construir`, no `/revisar` e
   no checklist de release.
-
-Design system que ninguém verifica vira documento morto: antes deste arranjo o
-guia citava um `--color-high-contrast` que nunca existiu e o showcase tinha
-três cores inventadas na mão.
 
 A marca é fictícia e existe para ser trocada.
 
@@ -176,8 +231,10 @@ A marca é fictícia e existe para ser trocada.
   — o hook bloqueia `vercel --prod` até lá. Quando existir, o SQLite não vai
   junto: serverless não guarda arquivo, então deploy significa migrar para
   Postgres, e o histórico do Prisma é por provider (é regerar, não repetir).
-- **Contas.** Quem provisiona o projeto no Clerk e como a pessoa recebe as
-  chaves. Dependência de infra. O banco saiu dessa lista: é arquivo.
+- **Contas.** Quem cria o cliente OAuth no Google Cloud Console e como a pessoa
+  recebe `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`. Dependência de infra, e a
+  maior do plugin hoje: o público-alvo não faz esse passo sozinho. O `/comecar`
+  manda pedir ao TI e explica o que pedir. O banco saiu dessa lista: é arquivo.
 - **Dado corporativo.** Hoje só por CSV exportado à mão. Quem exporta, com que
   frequência, e por onde o arquivo trafega.
 - **Suporte.** Quem responde quando o hook bloqueia e a pessoa não entende.

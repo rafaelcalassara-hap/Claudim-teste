@@ -1,7 +1,7 @@
 {
   "name": "claudim",
   "description": "Construa aplicações internas com Next.js, Prisma e SQLite. Três comandos: /planejar, /construir, /revisar. Design system tokenizado e guardrails de LGPD e ANS impostos por hook.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Greenfield LLC"
   },

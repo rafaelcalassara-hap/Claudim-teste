@@ -34,7 +34,7 @@ Fixture, seed, CSV de exemplo, notebook: **zero** dado de gente real. O hook
 `guard_pii` bloqueia CPF e CNS com dígito verificador válido, e condição de
 saúde em arquivo de exemplo.
 
-Gere com `lib/dados-sinteticos.ts`. Isso vale também para `prisma/seed.ts` e
+Gere com `lib/dados/sinteticos.ts`. Isso vale também para `prisma/seed.ts` e
 para qualquer migração com `INSERT` de exemplo. Se precisar de um caso real
 para reproduzir um problema, consulte o banco em tempo de execução — não copie
 para arquivo.

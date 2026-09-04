@@ -24,7 +24,10 @@ export function mascararCns(valor: unknown): string {
 }
 
 export function mascararNome(valor: unknown): string {
-  const partes = String(valor ?? "").trim().split(/\s+/).filter(Boolean);
+  const partes = String(valor ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
   if (partes.length === 0) return "***";
   if (partes.length === 1) return partes[0];
   return `${partes[0]} ${partes[partes.length - 1][0]}.`;
@@ -46,7 +49,9 @@ export function mascararTelefone(valor: unknown): string {
 export function hashCpf(valor: unknown): string {
   const salt = process.env.PII_SALT;
   if (!salt) throw new Error("PII_SALT não configurado no .env.");
-  return createHash("sha256").update(`${salt}${somenteDigitos(valor)}`).digest("hex");
+  return createHash("sha256")
+    .update(`${salt}${somenteDigitos(valor)}`)
+    .digest("hex");
 }
 
 const REGRAS: [RegExp, (v: unknown) => string][] = [

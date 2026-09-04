@@ -28,8 +28,7 @@ def prettier(raiz: Path) -> list[str] | None:
     return [global_] if global_ else None
 
 
-def main() -> None:
-    evento = ler_evento()
+def formatar(evento: dict) -> None:
     caminho = caminho_alvo(evento)
     if caminho is None or caminho.suffix.lower() not in EXTENSOES or not caminho.is_file():
         return
@@ -46,4 +45,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    formatar(ler_evento())

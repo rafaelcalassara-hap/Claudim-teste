@@ -12,7 +12,7 @@
     {
       "name": "claudim",
       "source": "./plugins/claudim",
-      "description": "Construa aplicações internas (Next.js + Prisma + SQLite, sessão com Clerk) com design system tokenizado e guardrails de LGPD/ANS. Para pessoas de marketing, growth, dados e operações.",
+      "description": "Construa aplicações internas (Next.js + Prisma + SQLite, login com a conta Google da empresa) com design system tokenizado e guardrails de LGPD/ANS. Para pessoas de marketing, growth, dados e operações.",
       "version": "0.2.0",
       "category": "development",
       "keywords": [

@@ -40,6 +40,14 @@ def bash(cwd: str, comando: str) -> dict:
     }
 
 
+def pos_escrita(cwd: str, caminho: str) -> dict:
+    """PostToolUse: o arquivo ja existe em disco quando o hook roda."""
+    return {
+        "hook_event_name": "PostToolUse", "tool_name": "Write", "cwd": cwd,
+        "tool_input": {"file_path": caminho},
+    }
+
+
 def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="greenfield-teste-"))
     projeto = tmp / "projeto"
@@ -63,10 +71,10 @@ def main() -> int:
         ("segredo: chave .pem", "guard_write", escrita(p, f"{p}/chave.pem", "----"), True),
         ("segredo: senha na string de conexao", "guard_write",
          escrita(p, f"{p}/lib/db.ts", 'const URL="postgresql://user:s3nha@host/db"'), True),
-        ("segredo: chave secreta do Clerk em codigo", "guard_write",
-         escrita(p, f"{p}/lib/auth.ts", 'const k = "sk_test_aBcDeFgHiJkLmNoPqRsTuVwXyZ0123";'), True),
+        ("segredo: chave do cliente OAuth do Google em codigo", "guard_write",
+         escrita(p, f"{p}/auth.ts", 'const k = "GOCSPX-aBcDeFgHiJkLmNoPqRsTuVwX";'), True),
         ("segredo: NEXT_PUBLIC_ com segredo", "guard_write",
-         escrita(p, f"{p}/lib/config.ts", 'process.env.NEXT_PUBLIC_CLERK_SECRET_KEY'), True),
+         escrita(p, f"{p}/lib/config.ts", 'process.env.NEXT_PUBLIC_AUTH_GOOGLE_SECRET'), True),
         # Fora do projeto greenfield: isola a regra de segredo da regra de PLANO.md.
         ("segredo: NEXT_PUBLIC_ publico liberado", "guard_write",
          escrita(str(tmp), f"{tmp}/config.ts", 'process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'), False),
@@ -122,28 +130,57 @@ def main() -> int:
          escrita(p, f"{p}/lib/email.ts",
                  'import nodemailer from "nodemailer";\nexport const assunto = "Recuperar senha";'), True),
         ("auth: outra biblioteca de login", "guard_auth",
-         escrita(p, f"{p}/lib/auth.ts", 'import NextAuth from "next-auth";'), True),
+         escrita(p, f"{p}/lib/auth.ts", 'import { clerkMiddleware } from "@clerk/nextjs/server";'), True),
+        ("auth: better-auth", "guard_auth",
+         escrita(p, f"{p}/lib/auth.ts", 'import { betterAuth } from "better-auth";'), True),
+        ("auth: next-auth liberado", "guard_auth",
+         escrita(p, f"{p}/auth.ts",
+                 'import NextAuth from "next-auth";\nimport Google from "next-auth/providers/google";\n'
+                 'export const { auth } = NextAuth({ callbacks: { signIn({ profile }) '
+                 '{ return emailPermitido(profile.email); } } });'), False),
+        ("auth: provider Credentials", "guard_auth",
+         escrita(p, f"{p}/auth.ts",
+                 'import Credentials from "next-auth/providers/credentials";'), True),
+        ("auth: config do NextAuth sem a lista", "guard_auth",
+         escrita(p, f"{p}/auth.ts",
+                 'export const { auth } = NextAuth({ providers: [Google] });'), True),
         ("auth: rota publica nova no middleware", "guard_auth",
          escrita(p, f"{p}/middleware.ts",
-                 'const publico = createRouteMatcher(["/entrar(.*)", "/relatorio(.*)"]);'), True),
-        ("auth: middleware so com /entrar liberado", "guard_auth",
+                 'const PUBLICO = ["/entrar", "/api/auth", "/relatorio"];'), True),
+        ("auth: middleware so com as duas portas liberado", "guard_auth",
          escrita(p, f"{p}/middleware.ts",
-                 'const publico = createRouteMatcher(["/entrar(.*)"]);'), False),
+                 'const PUBLICO = ["/entrar", "/api/auth"];'), False),
         ("auth: exigirSessao sem a lista", "guard_auth",
          escrita(p, f"{p}/lib/auth.ts",
-                 "export async function exigirSessao() {\n  const { userId } = await auth();\n  return userId;\n}"), True),
+                 "export async function exigirSessao() {\n  const sessao = await auth();\n  return sessao.user.email;\n}"), True),
         ("auth: exigirSessao com a lista liberado", "guard_auth",
          escrita(p, f"{p}/lib/auth.ts",
-                 "export async function exigirSessao() {\n  if (!emailPermitido(e)) throw new Error();\n  return userId;\n}"), False),
+                 "export async function exigirSessao() {\n  if (!emailPermitido(e)) throw new Error();\n  return e;\n}"), False),
         ("auth: tela comum liberada", "guard_auth",
          escrita(p, f"{p}/app/page.tsx", "export default function P() { return <h1>Leads</h1>; }"), False),
         ("auth: tabela Usuario sem senha liberada", "guard_auth",
-         escrita(p, f"{p}/prisma/schema.prisma", "model Usuario { id String @id\n  clerkId String }"), False),
+         escrita(p, f"{p}/prisma/schema.prisma", "model Usuario { id String @id\n  email String }"), False),
         ("auth: fora de projeto greenfield", "guard_auth",
          escrita(str(tmp), f"{tmp}/app/criar-conta/page.tsx", "return <SignUp />;"), False),
+
+        # Formatador e lint nunca travam o trabalho: sem node_modules no projeto
+        # de teste, os dois tem que sair 0 e calados. Hook de estilo que bloqueia
+        # e pior do que codigo mal formatado — o publico-alvo nao sabe o que fazer.
+        ("estilo: sem eslint instalado, post_lint libera", "post_lint",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+        ("estilo: sem prettier instalado, post_format libera", "post_format",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+        ("estilo: post_lint ignora arquivo que nao e codigo", "post_lint",
+         pos_escrita(p, f"{p}/PLANO.md"), False),
+        ("estilo: post_lint ignora arquivo inexistente", "post_lint",
+         pos_escrita(p, f"{p}/nao/existe.ts"), False),
     ]
 
     # Este caso so vale depois que o PLANO.md existir; roda por ultimo.
+    # PostToolUse roda com o arquivo ja gravado.
+    (projeto / "app").mkdir(parents=True, exist_ok=True)
+    (projeto / "app" / "page.tsx").write_text("export default function P() { return null; }\n")
+
     def criar_plano():
         (projeto / "PLANO.md").write_text("- [ ] 1. tela")
 
@@ -151,31 +188,36 @@ def main() -> int:
     casos.append(("processo: .tsx com PLANO.md", "guard_write",
                   escrita(p, f"{p}/app/page.tsx"), False))
 
+    # A porta unica. O hooks.json chama guard_edicao e pos_edicao, nao os guards
+    # um a um: se o encadeamento quebrar, tudo passa a liberar em silencio. Cada
+    # caso abaixo prova que a chamada chega a um guard diferente da fila — o de
+    # pii roda fora do greenfield de proposito, para o bloqueio nao poder vir do
+    # guard_write, que roda antes dele.
+    casos += [
+        ("porta: guard_edicao chega no guard_write (segredo)", "guard_edicao",
+         escrita(p, f"{p}/chave.pem", "----"), True),
+        ("porta: guard_edicao chega no guard_pii (CPF real)", "guard_edicao",
+         escrita(str(tmp), f"{tmp}/seed.ts", f'const CPF = "{cpf_valido}";'), True),
+        ("porta: guard_edicao chega no guard_auth (autocadastro)", "guard_edicao",
+         escrita(p, f"{p}/app/criar-conta/page.tsx", "return <SignUp />;"), True),
+        ("porta: guard_edicao libera codigo normal", "guard_edicao",
+         escrita(p, f"{p}/components/tabela.tsx",
+                 "export function T() { return null; }"), False),
+        ("porta: pos_edicao sem prettier nem eslint libera", "pos_edicao",
+         pos_escrita(p, f"{p}/app/page.tsx"), False),
+    ]
+
     # ---- design system -------------------------------------------------- #
     # O guard so opina em projeto que tem docs/design-system/DESIGN.md.
     def criar_design_system():
         pasta = projeto / "docs" / "design-system"
         pasta.mkdir(parents=True, exist_ok=True)
         (pasta / "DESIGN.md").write_text(
-            "---\n"
-            "name: Teste\n"
-            "colors:\n"
-            "  brand:\n"
-            "    primary: '#8D0000'\n"
-            "    primary-foreground: '#FFFFFF'\n"
-            "    accent: '#009E90'\n"
-            "  surface:\n"
-            "    foreground: '#2D2D2D'\n"
-            "    muted-foreground: '#777777'\n"
-            "  status:\n"
-            "    destructive: '#DC2626'\n"
-            "  line:\n"
-            "    border-muted: '#ACACAC'\n"
-            "rounded:\n"
-            "  lg: '6px'\n"
-            "elevation:\n"
-            "  sm: '0 3px 6px rgba(0,0,0,.2)'\n"
-            "---\n\n# Teste\n",
+            "---\nname: Teste\ncolors:\n  brand:\n    primary: '#8D0000'\n"
+            "    primary-foreground: '#FFFFFF'\n    accent: '#009E90'\n"
+            "  surface:\n    foreground: '#2D2D2D'\n    muted-foreground: '#777777'\n"
+            "  status:\n    destructive: '#DC2626'\n  line:\n    border-muted: '#ACACAC'\n"
+            "rounded:\n  lg: '6px'\nelevation:\n  sm: '0 3px 6px rgba(0,0,0,.2)'\n---\n\n# Teste\n",
             encoding="utf-8",
         )
         (pasta / "gerar-tema.py").write_text("# fixture\n", encoding="utf-8")
@@ -207,6 +249,9 @@ def main() -> int:
          escrita(p, f"{p}/scripts/seed.py", "cor = '#0055ff'"), False),
         ("ds: fora de projeto com design system", "guard_ds",
          escrita(str(tmp), f"{tmp}/qualquer.tsx", '<div className="bg-blue-600" />'), False),
+        # a porta unica precisa chegar ate o 4o guard da fila
+        ("porta: guard_edicao chega no guard_ds (cor do Tailwind)", "guard_edicao",
+         ui('<div className="bg-blue-600" />'), True),
     ]
 
     falhas = 0

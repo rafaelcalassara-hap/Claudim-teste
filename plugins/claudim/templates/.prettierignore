@@ -1,0 +1,9 @@
+.next/
+node_modules/
+package-lock.json
+*.db
+
+# Markdown fica de fora: CLAUDE.md e PLANO.md sao escritos a mao, quebrados na
+# largura da coluna de proposito, e o prettier so ia repaginar tabela sem
+# ganho nenhum para quem le.
+*.md

@@ -42,16 +42,23 @@ usuário em uma frase o que aconteceu — sem jargão.
 
 "Terminei" sem aplicação rodando não conta. Ao fim de cada rodada:
 
-1. `npx tsc --noEmit` — erro de tipo aqui é bug, não chatice do TypeScript.
+1. `npm run checar` — `tsc --noEmit` mais `eslint .`. Erro aqui é bug, não
+   chatice do TypeScript.
 2. Tocou em tela, componente ou tema?
-   `python3 docs/design-system/gerar-tema.py --checar` — ele acusa
-   `globals.css` fora de sincronia com o `DESIGN.md` e classe de tema sem
-   token.
+   `python3 docs/design-system/gerar-tema.py --checar` — acusa `globals.css`
+   fora de sincronia com o `DESIGN.md` e classe de tema sem token.
 2. `npm run dev` (siga a skill `run` se disponível) e abra
    http://localhost:3000. Confirme que a tela abre e que o passo entregue está
    visível nela.
 3. Se quebrar, conserte antes de falar com o usuário.
 4. `git add -A && git commit -m "..."` descrevendo o passo em português.
+
+## Se o lint reclamar
+
+O hook passa `prettier` e `eslint --fix` sozinho a cada arquivo que você grava.
+Quando ele devolver erro que o `--fix` não resolveu, conserte na hora, antes de
+abrir outro arquivo. Não use `eslint-disable` para calar a regra e não leve o
+assunto ao usuário — ele é de marketing, e lint não é decisão dele.
 
 ## Fechar
 

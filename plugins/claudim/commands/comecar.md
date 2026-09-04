@@ -63,8 +63,14 @@ preencha os placeholders `{{...}}` com as respostas:
 | `package.json` | `{{SLUG_DO_PROJETO}}` — o nome em minúsculas, com hífen |
 | `app/layout.tsx`, `app/page.tsx` | título e subtítulo da aplicação |
 | `.env.example`, `.gitignore`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `components.json` | mantenha como estão |
-| `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/` | copie sem alterar |
-| `docs/design-system/` | copie sem alterar — `DESIGN.md` é a fonte do tema, `DS-ACME.md` é o guia de uso |
+| `eslint.config.mjs`, `eslint.config.revisao.mjs`, `.prettierrc`, `.prettierignore` | copie sem alterar — são as regras de código, e um hook as aplica sozinho |
+| `auth.ts`, `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/`, `app/api/` | copie sem alterar |
+| `docs/design-system/` | copie sem alterar — `DESIGN.md` é a fonte do tema, `DS-ACME.md` o guia de uso |
+
+Atenção ao `cp -R`: os arquivos que começam com ponto (`.prettierrc`,
+`.prettierignore`, `.gitignore`, `.env.example`) não vêm no `cp -R origem/*`.
+Copie a pasta inteira (`cp -R "${CLAUDE_PLUGIN_ROOT}/templates/." .`) ou liste
+os arquivos com ponto à parte.
 
 Use `cp -R` para os arquivos que não mudam e Write só para os que têm
 placeholder.
@@ -114,8 +120,13 @@ npm install
 npx prisma generate
 npx prisma db push
 npx prisma db seed
+npm run checar
 npm run dev
 ```
+
+`npm run checar` roda o TypeScript e o eslint. No projeto recém-criado ele passa
+limpo — se acusar algo, é porque o scaffold saiu errado, e conserte antes de
+seguir. Não mostre a saída desse comando ao usuário.
 
 `db push` cria o arquivo `prisma/dev.db` e `db seed` põe 200 registros de
 exemplo dentro. Os dois são obrigatórios: sem eles a tela abre vazia, e o
@@ -126,8 +137,8 @@ conserte antes de dizer que terminou.
 
 O banco é um arquivo dentro do projeto — não existe conta, servidor nem senha,
 e não há nada a preencher no `.env` para ele. A aplicação também sobe sem exigir
-login enquanto as chaves do Clerk não estiverem no `.env`. Não peça conta de
-Clerk agora.
+login enquanto `AUTH_GOOGLE_ID` não estiver no `.env`. Não peça nada de Google
+agora.
 
 ## 7. Fechar com o usuário
 
@@ -141,14 +152,7 @@ Três linhas, sem lista de arquivos:
 - Próximo passo literal: **"Agora rode `/planejar` para dizer o que a
   aplicação precisa fazer."**
 
-Guarde para depois, sem falar agora: quando a aplicação precisar de login de
-verdade ou de dados de verdade, você pede as chaves do Clerk e a URL do banco,
-uma de cada vez, e escreve no `.env` junto com a pessoa.
-
-Quando esse momento chegar, `EMAILS_PERMITIDOS` é preenchido **na mesma hora**
-que as chaves do Clerk, começando pelo `email_criador` do `state.json` — a lista
-vazia não deixa ninguém entrar, e é assim de propósito. Diga também, em uma
-frase, que a instância do Clerk precisa ficar em "Restricted" no painel, senão
-qualquer pessoa com o endereço cria conta sozinha. Senha e recuperação de senha
-são do Clerk: esta aplicação nunca guarda senha, e você nunca escreve tela de
-"esqueci minha senha".
+Guarde para depois, sem falar agora: um dia essa aplicação vai precisar de
+login de verdade, e ligar isso não é passo de marketing. Quando o momento
+chegar, leia `${CLAUDE_PLUGIN_ROOT}/skills/next-padroes/references/acesso.md`
+— a seção "Ligar o login" tem o roteiro inteiro. Não adiante nada disso agora.

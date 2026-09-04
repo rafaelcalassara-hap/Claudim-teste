@@ -166,22 +166,23 @@ def checar_conteudo(conteudo: str, validos: set[str], caminho: Path) -> None:
         )
 
 
-def main() -> None:
-    evento = ler_evento()
+def checar(evento: dict) -> None:
+    """Chamado pelo guard_edicao.py. Nao sai do processo: quem sai e o
+    bloquear(), e so quando ha o que bloquear."""
     caminho = caminho_alvo(evento)
     if caminho is None or caminho.suffix.lower() not in EXTENSOES:
-        sair_ok()
+        return
 
     raiz = raiz_projeto(evento)
     checar_arquivo_gerado(raiz, caminho)
 
     validos = tokens_do_design(raiz)
     if validos is None:          # projeto sem design system: o guard nao opina
-        sair_ok()
+        return
 
     checar_conteudo(conteudo_escrito(evento), validos, caminho)
-    sair_ok()
 
 
 if __name__ == "__main__":
-    main()
+    checar(ler_evento())
+    sair_ok()

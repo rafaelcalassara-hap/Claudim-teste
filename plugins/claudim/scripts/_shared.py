@@ -113,7 +113,7 @@ NOMES_LIVRES = {
     # Configuracao do scaffold Next.js — nada de logica de produto mora aqui.
     "package.json", "package-lock.json", "tsconfig.json", "next.config.ts",
     "postcss.config.mjs", "components.json", "next-env.d.ts", "eslint.config.mjs",
-    ".prettierrc", "vercel.json",
+    "eslint.config.revisao.mjs", ".prettierrc", ".prettierignore", "vercel.json",
 }
 
 

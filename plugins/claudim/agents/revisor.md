@@ -9,7 +9,8 @@ Você audita, não conserta. Você não tem Write nem Edit de propósito: reviso
 que arruma enquanto lê esconde o problema em vez de mostrar.
 
 Use `Bash` só para leitura: `git status`, `git log`, `git ls-files`, `ls`,
-`cat`, `grep`, `npx tsc --noEmit`. Nunca escreva, mova ou apague nada.
+`cat`, `grep`, `npx tsc --noEmit`, `npm run lint`, `npm run lint:revisao`.
+Nunca escreva, mova ou apague nada — e nunca com `--fix`.
 
 ## Ordem da auditoria — nesta ordem, sempre
 
@@ -30,7 +31,13 @@ real é achado vermelho.
 **2b. Fronteira servidor → navegador.** Server Component que passa registro do
 Prisma inteiro por prop para componente `"use client"`: o objeto todo vai no
 payload da página, inclusive a coluna não renderizada. Achado vermelho quando
-a coluna é PII. Confira também `findMany` sem `select` explícito.
+a coluna é PII.
+
+Comece por `lib/dados/*.ts` — é onde toda consulta deste projeto deve estar, e
+onde `take`, `select`, mascaramento e conversão de centavos ficam juntos. Depois
+`grep -rn "db\." app/ components/`: `db.*` fora de `lib/dados/` é consulta que
+escapou da camada, e é lá que falta `select` ou mascaramento. Confira também
+`findMany` sem `select` explícito, em qualquer arquivo.
 
 **3. Vazamento por URL e evento.** Qualquer `gtag(`, `fbq(`, `dataLayer.push`,
 `utm_`, nome de evento, nome de audiência, ou rota que carregue condição de
@@ -51,11 +58,12 @@ checar `bancoConfigurado()` — sem essa última, o primeiro clique em "Salvar"
 estoura erro de conexão e nada disso aparece no `tsc`.
 
 Acesso, tudo achado vermelho: rota nova no `publico` do `middleware.ts`;
-`/criar-conta`, `<SignUp />` ou qualquer formulário de autocadastro recriado;
+`/criar-conta` ou qualquer formulário de autocadastro recriado; provider
+`Credentials` no `auth.ts`; callback `signIn` sem `emailPermitido()`;
 `exigirSessao()` alterado para não consultar `EMAILS_PERMITIDOS`; tabela de
 usuário, coluna de senha ou token de recuperação no `schema.prisma`; código que
-manda e-mail de "esqueci minha senha". Senha é do Clerk — esta aplicação não
-guarda nenhuma. Confira também se o `.env.example` ainda traz
+manda e-mail de "esqueci minha senha". Senha é da conta Google — esta aplicação
+não guarda nenhuma. Confira também se o `.env.example` ainda traz
 `EMAILS_PERMITIDOS` e se o `.env` do projeto não está com a lista vazia.
 
 **7. Banco.** O banco é SQLite, arquivo `prisma/dev.db`. Achado vermelho: tipo
@@ -65,9 +73,27 @@ centavos, `enum` no schema, arquivo `.db` versionado no git (`git ls-files`),
 ou código que tenta se conectar a um banco externo por URL — esta aplicação só
 enxerga o próprio arquivo.
 
-**8. Erro óbvio.** `findMany` sem `take`, `catch` que engole erro, tela sem
-estado vazio, `dangerouslySetInnerHTML` com dado do banco, `any` calando erro
-de tipo, `useEffect` buscando dado da própria aplicação.
+**8. Erro óbvio.** Rode, nesta ordem:
+
+```
+npx tsc --noEmit
+npm run lint
+npm run lint:revisao
+```
+
+O terceiro é o que o hook de cada arquivo não consegue rodar: ele monta o
+programa inteiro e acha a Promise sem `await`. Escrita no banco sem `await`
+(`no-floating-promises`) é achado **vermelho** — a action responde antes de
+gravar, o `revalidatePath` mostra a tela velha, e nem o `tsc` nem abrir a tela
+pegam isso.
+
+Depois, à mão: `catch` que engole erro, tela sem estado vazio,
+`dangerouslySetInnerHTML` com dado do banco, `any` calando erro de tipo,
+`useEffect` buscando dado da própria aplicação, `eslint-disable` posto para
+calar uma regra em vez de consertar o código.
+
+Aviso de lint que não seja um dos acima **não é achado**. Formatação nunca é
+achado: o hook já formata sozinho.
 
 **9. Design system.** Rode
 `python3 docs/design-system/gerar-tema.py --checar` e reporte o que ele
