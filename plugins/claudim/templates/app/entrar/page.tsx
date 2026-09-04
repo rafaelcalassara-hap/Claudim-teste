@@ -4,7 +4,7 @@ import { authConfigurado } from "@/lib/config";
 export default function Pagina() {
   if (!authConfigurado()) {
     return (
-      <p className="rounded-padrao border border-borda p-6 text-center text-texto-suave">
+      <p className="rounded-lg border border-border-muted p-6 text-center text-muted-foreground">
         O login ainda não foi configurado neste projeto.
       </p>
     );
@@ -19,14 +19,14 @@ export default function Pagina() {
       >
         <button
           type="submit"
-          className="rounded-padrao border border-borda px-6 py-3 font-medium"
+          className="rounded-lg border border-border-muted px-6 py-3 font-medium"
         >
           Entrar com a conta da empresa
         </button>
       </form>
       {/* Não existe tela de criar conta: a conta é a do Google da empresa, e o
           acesso a esta aplicação é concedido, não solicitado. */}
-      <p className="text-sm text-texto-suave">
+      <p className="text-sm text-muted-foreground">
         Não consegue entrar? Peça acesso a quem criou esta aplicação.
       </p>
     </div>

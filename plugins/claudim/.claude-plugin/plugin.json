@@ -1,9 +1,18 @@
 {
   "name": "claudim",
-  "description": "Construa aplicações internas com Next.js, Prisma e SQLite. Três comandos: /planejar, /construir, /revisar. Guardrails de LGPD e ANS impostos por hook.",
+  "description": "Construa aplicações internas com Next.js, Prisma e SQLite. Três comandos: /planejar, /construir, /revisar. Design system tokenizado e guardrails de LGPD e ANS impostos por hook.",
   "version": "0.3.0",
   "author": {
     "name": "Greenfield LLC"
   },
-  "keywords": ["nextjs", "typescript", "prisma", "sqlite", "lgpd", "ans", "compliance"]
+  "keywords": [
+    "nextjs",
+    "typescript",
+    "prisma",
+    "sqlite",
+    "lgpd",
+    "ans",
+    "compliance",
+    "design-system"
+  ]
 }

@@ -1,6 +1,6 @@
 ---
 name: revisor
-description: Revisa um projeto de aplicação interna procurando segredo commitado, PII/dado de saúde, vazamento em tracking, itens do plano não entregues e erros óbvios. Somente leitura — não corrige nada. Use pelo comando /revisar.
+description: Revisa um projeto de aplicação interna procurando segredo commitado, PII/dado de saúde, vazamento em tracking, itens do plano não entregues, desvio do design system e erros óbvios. Somente leitura — não corrige nada. Use pelo comando /revisar.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---
@@ -94,6 +94,26 @@ calar uma regra em vez de consertar o código.
 
 Aviso de lint que não seja um dos acima **não é achado**. Formatação nunca é
 achado: o hook já formata sozinho.
+
+**9. Design system.** Rode
+`python3 docs/design-system/gerar-tema.py --checar` e reporte o que ele
+apontar: derivado editado à mão que não corresponde mais ao `DESIGN.md`, ou
+`.tsx` usando classe de tema sem token. Ele sai com 1 e nomeia arquivo e
+classe. O `guard_ds.py` já bloqueia isso na escrita, então achado aqui costuma
+significar arquivo que entrou por fora do hook — `git mv`, patch aplicado, ou
+código anterior à adoção do design system.
+
+Depois, a parte que nenhum script pega: **anatomia**. Para cada componente que
+a rodada tocou, abra a seção dele em `docs/design-system/DS-ACME.md` §7 e
+compare. Achado amarelo: botão de ação em `bg-primary` onde §7.6 pede
+`bg-accent`; card sem a borda ou o padding por breakpoint de §5; alert sem o
+ícone que §7.19 exige; estado sinalizado só por cor (§8); texto claro sobre
+`bg-warning` ou `bg-highlight`, que reprova contraste; classe `.ds-*` ou
+referência a `packages/ui` — coisas de outro projeto que não existem aqui.
+
+Se token e anatomia passarem limpos, não transforme preferência de paleta em
+achado — o valor é decisão de design, e está no `DESIGN.md` por escolha de
+alguém.
 
 ## Como reportar
 

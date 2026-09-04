@@ -23,7 +23,8 @@ exportação.
 |---|---|
 | `app/page.tsx` | a tela (Server Component: só sessão, filtro e o que aparece) |
 | `app/acoes.ts` | server actions desta rota — zod, sessão, banco, depois o efeito |
-| `app/globals.css` | tokens de tema do Tailwind v4, no bloco `@theme` |
+| `app/globals.css` | **gerado** do design system — hook bloqueia edição à mão |
+| `docs/design-system/` | o design system: `DESIGN.md` = **o valor** (a fonte), `DS-ACME.md` = **o uso** (anatomia, do/don't) |
 | `components/` | componentes React seus |
 | `components/ui/` | primitivos do shadcn/ui (`npx shadcn@latest add ...`) |
 | `lib/dados/<tabela>.ts` | **toda leitura e escrita de uma tabela** — um arquivo por tabela |
@@ -59,6 +60,8 @@ escreve — invoque ela antes de mexer no assunto, não depois.
 | Toda entrada de action passa por `zod` antes de virar efeito. | `next-padroes` |
 | Quem entra está em `EMAILS_PERMITIDOS`. Não há tela de criar conta nem senha aqui. | `next-padroes` |
 | Erro na tela em português, sem stack trace. | `next-padroes` |
+| Cor, raio, sombra e espaçamento saem de `docs/design-system/DESIGN.md`. Nunca hex nem cor do Tailwind — o `globals.css` é gerado. | `next-padroes` |
+| Como montar botão, card, input, alert, header sai de `docs/design-system/DS-ACME.md` §7. | `next-padroes` |
 | PII é mascarada no servidor, antes de ir por prop para `"use client"`. | `dados-sensiveis` |
 | Dado de pessoa real não entra em arquivo — use `lib/dados/sinteticos.ts`. | `dados-sensiveis` |
 | Segredo vem de `process.env`, e nunca com prefixo `NEXT_PUBLIC_`. | `dados-sensiveis` |

@@ -1,6 +1,6 @@
 ---
 name: next-padroes
-description: Padrões obrigatórios de código Next.js neste stack — App Router, Server Components, server actions com zod e checagem de sessão, Tailwind v4, shadcn/ui, exportação CSV, tratamento de erro legível para quem não é técnico. Use ao criar ou alterar qualquer tela, componente ou action da aplicação.
+description: Padrões obrigatórios de código Next.js neste stack — App Router, Server Components, server actions com zod e checagem de sessão, Tailwind v4, shadcn/ui, design system tokenizado em docs/design-system, exportação CSV, tratamento de erro legível para quem não é técnico. Use ao criar ou alterar qualquer tela, componente ou action da aplicação.
 ---
 
 # Next.js — como escrevemos aqui
@@ -21,7 +21,7 @@ parte que você vai tocar — nesta mesma pasta:
 | consulta, `lib/dados/`, o que a página busca | `references/dados.md` |
 | server action, formulário, qualquer escrita | `references/acoes.md` |
 | `auth.ts`, `middleware.ts`, `lib/auth.ts`, login, quem entra | `references/acesso.md` |
-| layout, Tailwind, shadcn/ui, mensagem de erro, estado vazio, CSV | `references/ui.md` |
+| cor, raio, sombra, espaçamento, botão, card, alert, header — qualquer coisa visual; Tailwind, shadcn/ui, erro, vazio, CSV | `references/ui.md` |
 
 Mais de uma linha se aplica? Leia as duas. Nenhuma se aplica? O que está aqui
 basta.
@@ -31,11 +31,12 @@ basta.
 ```
 app/page.tsx          # a tela — Server Component
 app/acoes.ts          # server actions desta rota ("use server" no topo)
-app/globals.css       # tokens do tema, no bloco @theme
+app/globals.css       # tokens do tema — GERADO de docs/design-system/DESIGN.md
 app/<rota>/page.tsx   # telas extras
 app/<rota>/acoes.ts   # as actions daquela rota, junto dela
 app/entrar/           # a tela de entrada — rota pública
 app/api/auth/         # o retorno do Google — a outra rota pública
+docs/design-system/   # DESIGN.md = o valor (fonte); DS-ACME.md = o uso
 components/           # componentes seus
 components/ui/        # primitivos do shadcn/ui
 lib/dados/<tabela>.ts # TODA leitura e escrita daquela tabela

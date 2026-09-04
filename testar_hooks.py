@@ -207,6 +207,53 @@ def main() -> int:
          pos_escrita(p, f"{p}/app/page.tsx"), False),
     ]
 
+    # ---- design system -------------------------------------------------- #
+    # O guard so opina em projeto que tem docs/design-system/DESIGN.md.
+    def criar_design_system():
+        pasta = projeto / "docs" / "design-system"
+        pasta.mkdir(parents=True, exist_ok=True)
+        (pasta / "DESIGN.md").write_text(
+            "---\nname: Teste\ncolors:\n  brand:\n    primary: '#8D0000'\n"
+            "    primary-foreground: '#FFFFFF'\n    accent: '#009E90'\n"
+            "  surface:\n    foreground: '#2D2D2D'\n    muted-foreground: '#777777'\n"
+            "  status:\n    destructive: '#DC2626'\n  line:\n    border-muted: '#ACACAC'\n"
+            "rounded:\n  lg: '6px'\nelevation:\n  sm: '0 3px 6px rgba(0,0,0,.2)'\n---\n\n# Teste\n",
+            encoding="utf-8",
+        )
+        (pasta / "gerar-tema.py").write_text("# fixture\n", encoding="utf-8")
+
+    casos.append((criar_design_system, None, None, None))
+
+    ui = lambda corpo: escrita(p, f"{p}/app/tela.tsx", corpo)
+    casos += [
+        ("ds: hex arbitrario na classe", "guard_ds",
+         ui('<div className="bg-[#0055ff]" />'), True),
+        ("ds: cor da paleta Tailwind", "guard_ds",
+         ui('<div className="bg-blue-600 text-gray-500" />'), True),
+        ("ds: classe sem token no DESIGN.md", "guard_ds",
+         ui('<div className="bg-azul-corporativo" />'), True),
+        ("ds: hex em style inline", "guard_ds",
+         ui('<div style={{ background: "#0055ff" }} />'), True),
+        ("ds: token do projeto liberado", "guard_ds",
+         ui('<div className="bg-primary text-primary-foreground" />'), False),
+        ("ds: utilitaria nativa do Tailwind liberada", "guard_ds",
+         ui('<div className="text-sm p-4 rounded-lg shadow-sm font-bold" />'), False),
+        # regressao: nativa com escala numerica travava o proprio template
+        ("ds: nativa com escala (outline-offset-2)", "guard_ds",
+         ui('<button className="focus-visible:outline-offset-2 ring-offset-4" />'), False),
+        ("ds: token de borda e texto liberado", "guard_ds",
+         ui('<p className="border-border-muted text-muted-foreground" />'), False),
+        ("ds: editar globals.css gerado", "guard_ds",
+         escrita(p, f"{p}/app/globals.css", "@theme { --color-primary: #fff; }"), True),
+        ("ds: arquivo que nao e de UI liberado", "guard_ds",
+         escrita(p, f"{p}/scripts/seed.py", "cor = '#0055ff'"), False),
+        ("ds: fora de projeto com design system", "guard_ds",
+         escrita(str(tmp), f"{tmp}/qualquer.tsx", '<div className="bg-blue-600" />'), False),
+        # a porta unica precisa chegar ate o 4o guard da fila
+        ("porta: guard_edicao chega no guard_ds (cor do Tailwind)", "guard_edicao",
+         ui('<div className="bg-blue-600" />'), True),
+    ]
+
     falhas = 0
     total = 0
     for nome, script, evento, deve_bloquear in casos:

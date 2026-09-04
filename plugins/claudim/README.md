@@ -21,8 +21,8 @@ O laço normal é `/construir` → `/revisar` até ficar bom.
 
 Bloqueio = exit code 2, mensagem em português, sempre com o próximo passo.
 
-Os três primeiros entram por uma porta só, `guard_edicao.py`: um processo
-Python por edição em vez de três, e o primeiro achado bloqueia — uma mensagem,
+Os quatro primeiros entram por uma porta só, `guard_edicao.py`: um processo
+Python por edição em vez de quatro, e o primeiro achado bloqueia — uma mensagem,
 não três de uma vez.
 
 **Write/Edit · segredo e processo** (`guard_write.py`)
@@ -48,6 +48,14 @@ não três de uma vez.
 - rota nova no `PUBLICO` do `middleware.ts` — só `/entrar` e `/api/auth` são
   públicas
 - `exigirSessao()` ou o callback `signIn` reescrito sem `emailPermitido()`
+
+**Write/Edit · design system** (`guard_ds.py`)
+- cor escrita direto no componente: `bg-[#0055ff]`, hex em `style={{...}}`
+- cor da paleta genérica do Tailwind: `bg-blue-600`, `text-gray-500`
+- classe de tema sem token no `DESIGN.md` — a utilitária nem existiria
+- editar `app/globals.css`, que é arquivo gerado
+- *só age em projeto que tem `docs/design-system/DESIGN.md`; sem design
+  system, não atrapalha*
 
 **PreToolUse · Bash** (`guard_bash.py`)
 - `git push` para `main`/`master`, e push forçado
@@ -81,14 +89,16 @@ ordem — assim o eslint sempre vê o arquivo já formatado)
 |---|---|
 | `escrever-plano` | transformar pedido vago em `PLANO.md` com critério de negócio |
 | `dados-sensiveis` | LGPD Art. 11, vazamento por URL/evento, ANS |
-| `next-padroes` | server/client e o que vale sempre. O detalhe está em `references/`, lido só quando o assunto aparece: `dados.md`, `acoes.md`, `acesso.md`, `ui.md` |
+| `next-padroes` | server/client e o que vale sempre. O detalhe está em `references/`, lido só quando o assunto aparece: `dados.md`, `acoes.md`, `acesso.md`, `ui.md`, e `ui.md` traz o design system: qual arquivo abrir para cada intenção |
 | `consultar-banco` | Prisma: o que pode escrever, teto de linhas, migração, PII mascarada |
 
 ## Subagents
 
 O valor está na restrição de ferramentas, não na persona.
 
-- `revisor` — `Read, Grep, Glob, Bash`. Não corrige enquanto revisa.
+- `revisor` — `Read, Grep, Glob, Bash`. Não corrige enquanto revisa. Audita
+  também o design system: token (via `gerar-tema.py --checar`) e anatomia
+  (contra `DS-ACME.md` §7).
 - `analista-dados` — mesma coisa, para pergunta sobre dado. Nunca imprime PII
   identificada no chat.
 
@@ -179,6 +189,41 @@ O scaffold sobe com 200 registros de exemplo já no banco e sem exigir login
 enquanto o `.env` estiver vazio — a pessoa vê a tela cheia no primeiro minuto,
 e gravar funciona de verdade desde o começo. `exigirSessao()` recusa rodar sem
 login em produção, então isso não vira uma aplicação interna aberta na internet.
+
+## Design system
+
+Uma fonte de verdade por coisa. Aqui a coisa é tema, e a fonte é
+`docs/design-system/DESIGN.md` — cor, tipografia, raio, sombra e espaçamento
+vivem lá e em nenhum outro lugar.
+
+| Arquivo | Responde | Não responde |
+|---|---|---|
+| `docs/design-system/DESIGN.md` | **qual é o valor.** YAML com cor, tipografia, raio, sombra, espaçamento, receita de componente | como usar |
+| `docs/design-system/DS-ACME.md` | **como usar.** Anatomia de 22 componentes, variantes, estados, faça/não faça, acessibilidade | valor — cita token por nome, nunca por hex |
+| `docs/design-system/gerar-tema.py` | lê o `DESIGN.md` e escreve os derivados | |
+| `app/globals.css` | **gerado** — o `@theme` do Tailwind | |
+| `docs/design-system/showcase.html` | **gerado** — os tokens renderizados | |
+
+Cada instrução do plugin aponta os dois pela pergunta que respondem: "preciso
+de uma cor" → `DESIGN.md`; "vou montar um card" → `DS-ACME.md` §7. Um agente
+que lê só o primeiro pega o hex certo e monta o header do jeito que quiser —
+foi o furo que este arranjo fecha.
+
+O nome da utilitária é o nome do token, sem tradução no meio:
+`--color-primary` gera `bg-primary`. Não existe um segundo vocabulário, e
+nenhum componente do template conhece hex — trocar o tema é editar o
+`DESIGN.md` e rodar o gerador.
+
+Dois níveis de verificação, porque guardrail que só avisa não serve:
+
+- **`guard_ds.py` bloqueia na hora da escrita** — cor literal, cor do Tailwind,
+  classe sem token, edição do `globals.css` gerado. Entra pela porta única do
+  `guard_edicao.py`, depois do `guard_auth`.
+- **`gerar-tema.py --checar` fecha a rodada** — pega o que o hook não vê, como
+  derivado que ficou fora de sincronia. Roda no `/construir`, no `/revisar` e
+  no checklist de release.
+
+A marca é fictícia e existe para ser trocada.
 
 ## Escopo que falta
 

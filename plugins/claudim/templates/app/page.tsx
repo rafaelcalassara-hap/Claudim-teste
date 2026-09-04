@@ -34,9 +34,9 @@ export default async function Pagina({
     dados = await listarEventos({ dias });
   } catch (erro) {
     return (
-      <div className="rounded-padrao border border-alerta/40 bg-alerta/5 p-4">
-        <p className="font-medium text-alerta">Não consegui carregar os dados.</p>
-        <p className="mt-1 text-sm text-texto-suave">
+      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4">
+        <p className="font-medium text-destructive">Não consegui carregar os dados.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
           Avise o time de dados. Detalhe técnico: {(erro as Error).name}
         </p>
       </div>
@@ -49,11 +49,11 @@ export default async function Pagina({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">{"{{NOME_DO_PROJETO}}"}</h1>
-        <p className="text-texto-suave">{"{{OBJETIVO}}"}</p>
+        <p className="text-muted-foreground">{"{{OBJETIVO}}"}</p>
       </div>
 
       {!bancoConfigurado() && (
-        <p className="rounded-padrao border border-borda bg-marca-suave p-3 text-sm">
+        <p className="rounded-lg border border-border-muted bg-soft p-3 text-sm">
           Mostrando <strong>dados de exemplo</strong>, gerados na hora. Para ver dados de
           verdade, recrie o banco com <code>npx prisma db push</code> e{" "}
           <code>npx prisma db seed</code>.
@@ -68,8 +68,8 @@ export default async function Pagina({
             href={`/?dias=${p}`}
             className={
               p === dias
-                ? "rounded-padrao bg-marca px-3 py-1.5 text-sm text-white"
-                : "rounded-padrao border border-borda px-3 py-1.5 text-sm hover:bg-marca-suave"
+                ? "rounded-lg bg-primary px-3 py-1.5 text-sm text-white"
+                : "rounded-lg border border-border-muted px-3 py-1.5 text-sm hover:bg-soft"
             }
           >
             {p} dias
@@ -78,21 +78,21 @@ export default async function Pagina({
       </nav>
 
       {dados.length === 0 ? (
-        <p className="rounded-padrao border border-borda p-6 text-center text-texto-suave">
+        <p className="rounded-lg border border-border-muted p-6 text-center text-muted-foreground">
           Nenhum resultado para esse filtro. Tente um período maior.
         </p>
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-texto-suave">
+            <p className="text-sm text-muted-foreground">
               {dados.length.toLocaleString("pt-BR")} registro(s) nos últimos {dias} dias
             </p>
             <ExportarCsv linhas={dados} nomeArquivo="dados.csv" />
           </div>
 
-          <div className="overflow-x-auto rounded-padrao border border-borda">
+          <div className="overflow-x-auto rounded-lg border border-border-muted">
             <table className="w-full text-sm">
-              <thead className="bg-marca-suave text-left">
+              <thead className="bg-soft text-left">
                 <tr>
                   {colunas.map((c) => (
                     <th key={c} className="px-3 py-2 font-medium">
@@ -103,7 +103,7 @@ export default async function Pagina({
               </thead>
               <tbody>
                 {dados.slice(0, 200).map((linha, i) => (
-                  <tr key={i} className="border-t border-borda">
+                  <tr key={i} className="border-t border-border-muted">
                     {colunas.map((c) => (
                       <td key={c} className="px-3 py-2">
                         {String(linha[c])}

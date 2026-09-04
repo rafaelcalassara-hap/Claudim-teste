@@ -14,6 +14,13 @@ allowed-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, Skill, TodoWrite
 ## Enquanto constrói
 
 - Siga a skill `next-padroes` para qualquer tela, componente ou action.
+- Vai criar ou alterar botão, card, input, alert, header, qualquer
+  componente? Leia a seção dele em `docs/design-system/DS-ACME.md` §7
+  **antes** de escrever, não depois — é lá que está a anatomia, as variantes
+  e os estados. Precisa de um valor (cor, raio, sombra, espaçamento)? O nome
+  do token está em `docs/design-system/DESIGN.md`, e só lá. O `globals.css` é
+  gerado: mudou o tema, edite o `DESIGN.md` e rode
+  `python3 docs/design-system/gerar-tema.py`.
 - Toque em CPF, carteirinha, beneficiário, diagnóstico, URL ou tracking?
   Invoque `dados-sensiveis` **antes** de escrever, não depois.
 - Consulta, schema ou migração: skill `consultar-banco`. Tabela de sistema
@@ -37,6 +44,9 @@ usuário em uma frase o que aconteceu — sem jargão.
 
 1. `npm run checar` — `tsc --noEmit` mais `eslint .`. Erro aqui é bug, não
    chatice do TypeScript.
+2. Tocou em tela, componente ou tema?
+   `python3 docs/design-system/gerar-tema.py --checar` — acusa `globals.css`
+   fora de sincronia com o `DESIGN.md` e classe de tema sem token.
 2. `npm run dev` (siga a skill `run` se disponível) e abra
    http://localhost:3000. Confirme que a tela abre e que o passo entregue está
    visível nela.

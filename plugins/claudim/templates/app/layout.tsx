@@ -19,7 +19,7 @@ async function Sessao() {
         "use server";
         await signOut({ redirectTo: "/entrar" });
       }}
-      className="flex items-center gap-3 text-sm text-texto-suave"
+      className="flex items-center gap-3 text-sm text-muted-foreground"
     >
       <span>{sessao.user.email}</span>
       <button type="submit" className="underline">
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className="min-h-screen">
-        <header className="flex items-center justify-between border-b border-borda px-6 py-3">
+        <header className="flex items-center justify-between border-b border-border-muted px-6 py-3">
           <span className="font-semibold">{"{{NOME_DO_PROJETO}}"}</span>
           <Sessao />
         </header>

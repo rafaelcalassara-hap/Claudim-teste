@@ -9,7 +9,10 @@ Ordem importa e e esta:
 
   1. guard_write — segredo e a regra "sem PLANO.md nao ha codigo";
   2. guard_pii   — CPF/CNS real, condicao de saude em fixture ou em tracking;
-  3. guard_auth  — modelo de acesso (so em projeto do /comecar).
+  3. guard_auth  — modelo de acesso (so em projeto do /comecar);
+  4. guard_ds    — design system: cor literal, cor do Tailwind, classe sem
+                   token, edicao do globals.css gerado (so em projeto que tem
+                   docs/design-system/DESIGN.md).
 
 O primeiro que achar problema chama bloquear(), que sai com exit 2 e leva a
 mensagem para o modelo. Os seguintes nao rodam — de proposito: uma edicao
@@ -26,6 +29,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import guard_auth  # noqa: E402
+import guard_ds  # noqa: E402
 import guard_pii  # noqa: E402
 import guard_write  # noqa: E402
 from _shared import ler_evento, sair_ok  # noqa: E402
@@ -36,6 +40,7 @@ def main() -> None:
     guard_write.checar(evento)
     guard_pii.checar(evento)
     guard_auth.checar(evento)
+    guard_ds.checar(evento)
     sair_ok()
 
 
