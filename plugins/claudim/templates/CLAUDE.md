@@ -23,7 +23,7 @@ exportação.
 | `app/page.tsx` | a tela (Server Component: busca no servidor) |
 | `app/acoes.ts` | server actions — zod valida, depois checa a sessão |
 | `app/globals.css` | **gerado** do design system — hook bloqueia edição à mão |
-| `docs/design-system/` | o design system. `DESIGN.md` é a **única** fonte dos valores de tema |
+| `docs/design-system/` | o design system: `DESIGN.md` = **o valor** (a fonte), `DS-ACME.md` = **o uso** (anatomia, do/don't) |
 | `components/` | componentes React seus |
 | `components/ui/` | primitivos do shadcn/ui (`npx shadcn@latest add ...`) |
 | `lib/config.ts` | login configurado no `.env` + quem pode entrar |
@@ -46,7 +46,8 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
 | Situação | Skill |
 |---|---|
 | Escrever ou alterar tela, componente ou server action | `next-padroes` |
-| Escolher cor, raio, sombra, espaçamento ou classe Tailwind | `next-padroes` + `docs/design-system/DESIGN.md` |
+| Escolher cor, raio, sombra, espaçamento | `next-padroes` + `docs/design-system/DESIGN.md` |
+| Montar botão, card, input, alert, header — ou saber se pode | `next-padroes` + `docs/design-system/DS-ACME.md` §7, §8, §9 |
 | Qualquer consulta, schema ou migração do Prisma | `consultar-banco` |
 | CPF, carteirinha, beneficiário, diagnóstico, tracking, URL de campanha, copy de plano | `dados-sensiveis` |
 | Definir ou revisar escopo | `escrever-plano` |
@@ -71,7 +72,8 @@ Recomeçar o banco com dado de exemplo: `npx prisma db push && npx prisma db see
 - Toda consulta de lista tem `take` (teto de linhas).
 - Erro na tela em português, sem stack trace.
 - **Cor, raio, sombra e espaçamento saem de `docs/design-system/DESIGN.md`**,
-  e de nenhum outro lugar. O `app/globals.css` é gerado por
+  e de nenhum outro lugar. **Como montar cada componente sai de
+  `docs/design-system/DS-ACME.md`**, e de nenhum outro lugar. O `app/globals.css` é gerado por
   `python3 docs/design-system/gerar-tema.py` — editá-lo à mão é trabalho
   perdido na próxima execução. Nunca hex na classe, nunca cor arbitrária do
   Tailwind. `python3 docs/design-system/gerar-tema.py --checar` verifica.

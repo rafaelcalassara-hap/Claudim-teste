@@ -64,7 +64,7 @@ preencha os placeholders `{{...}}` com as respostas:
 | `app/layout.tsx`, `app/page.tsx` | título e subtítulo da aplicação |
 | `.env.example`, `.gitignore`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `components.json` | mantenha como estão |
 | `middleware.ts`, `prisma/`, `lib/`, `components/`, `app/entrar/` | copie sem alterar |
-| `docs/design-system/` | copie sem alterar — é a fonte do tema da aplicação |
+| `docs/design-system/` | copie sem alterar — `DESIGN.md` é a fonte do tema, `DS-ACME.md` é o guia de uso |
 
 Use `cp -R` para os arquivos que não mudam e Write só para os que têm
 placeholder.

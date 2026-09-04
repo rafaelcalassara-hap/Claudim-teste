@@ -154,11 +154,25 @@ gera `bg-primary` e `text-primary`; `--radius-lg` gera `rounded-lg`.
 
 ## Design system
 
-**`docs/design-system/DESIGN.md` é a única fonte dos valores de tema.** Cor,
-tipografia, raio, sombra e espaçamento vivem lá, em YAML no topo do arquivo, e
-em nenhum outro lugar. Leia antes de escrever tela ou componente.
+Dois arquivos, duas perguntas. Saber qual abrir é metade do trabalho:
 
-O `app/globals.css` é **gerado** dele:
+| Sua intenção | Abra |
+| --- | --- |
+| Preciso de uma cor, raio, sombra, espaçamento, fonte | `docs/design-system/DESIGN.md` — o valor está lá, e só lá |
+| Vou criar ou alterar botão, card, input, alert, header, badge | `docs/design-system/DS-ACME.md` §7 — anatomia, variantes, estados |
+| Qual variante uso aqui? (primário vs secundário, card com hover…) | `DS-ACME.md` §7 do componente + §10 referência rápida |
+| Como sinalizo erro, sucesso, aviso, vazio | `DS-ACME.md` §7.19 e §8 — estado nunca é só cor |
+| Isso está acessível? | `DS-ACME.md` §8 |
+| Posso fazer X? | `DS-ACME.md` §9 — faça / não faça |
+| Container, grid, margem por breakpoint | `DS-ACME.md` §5 — e os tokens `--spacing-*` no `DESIGN.md` |
+| O DS não tem o que preciso | `DS-ACME.md` §11 — a ordem para estender sem quebrar a fonte única |
+
+**`DESIGN.md` é a única fonte dos valores.** Cor, tipografia, raio, sombra e
+espaçamento vivem no YAML do topo dele, e em nenhum outro lugar. **`DS-ACME.md`
+é a única fonte do uso.** Como montar, quando usar, o que não fazer. Um cita
+o outro por nome; nenhum repete o que o outro tem.
+
+O `app/globals.css` é **gerado** do `DESIGN.md`:
 
 ```
 python3 docs/design-system/gerar-tema.py
@@ -189,9 +203,9 @@ Ela falha se o `globals.css` divergiu do `DESIGN.md` ou se algum `.tsx` usa
 classe de tema sem token — `bg-azul`, `bg-blue-600`. É assim que nasce uma
 segunda paleta.
 
-`DS-ACME.md`, na mesma pasta, tem a anatomia de cada componente em prosa.
-Consulte quando a dúvida for *como montar*, não *qual valor usar* — ele cita
-token por nome e não repete valor, de propósito.
+Não existe classe `.ds-*`, não existe `packages/ui`, não existe Storybook
+neste projeto. Se um documento citar isso, está desatualizado — o que existe é
+`components/ui/` do shadcn e utilitária de token.
 
 ## shadcn/ui
 

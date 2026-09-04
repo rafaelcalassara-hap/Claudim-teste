@@ -14,10 +14,12 @@ allowed-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, Skill, TodoWrite
 ## Enquanto constrói
 
 - Siga a skill `next-padroes` para qualquer tela, componente ou action.
-- Vai criar tela, componente, cor ou classe Tailwind? Leia
-  `docs/design-system/DESIGN.md` **antes** de escrever, não depois. Cor, raio,
-  sombra e espaçamento saem de lá — e só de lá. O `globals.css` é gerado:
-  mudou o tema, edite o `DESIGN.md` e rode
+- Vai criar ou alterar botão, card, input, alert, header, qualquer
+  componente? Leia a seção dele em `docs/design-system/DS-ACME.md` §7
+  **antes** de escrever, não depois — é lá que está a anatomia, as variantes
+  e os estados. Precisa de um valor (cor, raio, sombra, espaçamento)? O nome
+  do token está em `docs/design-system/DESIGN.md`, e só lá. O `globals.css` é
+  gerado: mudou o tema, edite o `DESIGN.md` e rode
   `python3 docs/design-system/gerar-tema.py`.
 - Toque em CPF, carteirinha, beneficiário, diagnóstico, URL ou tracking?
   Invoque `dados-sensiveis` **antes** de escrever, não depois.

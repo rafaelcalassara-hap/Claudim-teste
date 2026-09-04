@@ -137,13 +137,18 @@ Uma fonte de verdade por coisa. Aqui a coisa é tema, e a fonte é
 `docs/design-system/DESIGN.md` — cor, tipografia, raio, sombra e espaçamento
 vivem lá e em nenhum outro lugar.
 
-| Arquivo | Papel |
-|---|---|
-| `docs/design-system/DESIGN.md` | **a fonte.** YAML com os valores e a receita de cada componente |
-| `docs/design-system/DS-ACME.md` | guia de uso: anatomia, do/don't, acessibilidade. Cita token por nome, nunca por valor |
+| Arquivo | Responde | Não responde |
+|---|---|---|
+| `docs/design-system/DESIGN.md` | **qual é o valor.** YAML com cor, tipografia, raio, sombra, espaçamento, receita de componente | como usar |
+| `docs/design-system/DS-ACME.md` | **como usar.** Anatomia de 22 componentes, variantes, estados, faça/não faça, acessibilidade | valor — cita token por nome, nunca por hex |
 | `docs/design-system/gerar-tema.py` | lê o `DESIGN.md` e escreve os derivados |
 | `app/globals.css` | **gerado** — o `@theme` do Tailwind |
 | `docs/design-system/showcase.html` | **gerado** — os tokens renderizados |
+
+Cada instrução do plugin aponta os dois pela pergunta que respondem: "preciso
+de uma cor" → `DESIGN.md`; "vou montar um card" → `DS-ACME.md` §7. Um agente
+que lê só o primeiro pega o hex certo e monta o header do jeito que quiser —
+foi o furo que este arranjo fecha.
 
 O nome da utilitária é o nome do token, sem tradução no meio:
 `--color-primary` gera `bg-primary`. Não existe um segundo vocabulário, e

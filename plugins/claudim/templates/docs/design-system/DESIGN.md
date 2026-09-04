@@ -2,9 +2,9 @@
 version: 1.0.0
 name: Acme Design System V2
 description: >
-  Machine-readable tokens and component guidelines for the Acme React monorepo.
-  Consumed by apps/console (internal panel) and apps/site (public sites).
-  Canonical token source: apps/site/src/app/global.css
+  Machine-readable theme tokens. Single source of every theme value.
+  Consumed by gerar-tema.py, which writes app/globals.css (Tailwind @theme)
+  and showcase.html. Usage guidance lives in DS-ACME.md.
 colors:
   brand:
     primary: '#8D0000'
@@ -127,26 +127,18 @@ components:
 
 # Acme Design System V2 — DESIGN.md
 
-> O **front matter YAML no topo deste arquivo é a única fonte dos valores** de
-> tema. O corpo abaixo documenta uso e cita token por nome. `gerar-tema.py` lê
-> o front matter e escreve `app/globals.css` e `showcase.html` — não edite os
-> derivados à mão.
+> **This file answers one question: what is the value.** The YAML front matter
+> at the top is the single source of every theme value; the tables below name
+> the tokens and what each one is for. `gerar-tema.py` reads the front matter
+> and writes `app/globals.css` and `showcase.html` — never edit those by hand.
+>
+> **It does not answer how to use them.** Component anatomy, variants, states,
+> do/don't and accessibility live in [`DS-ACME.md`](./DS-ACME.md). Building a
+> screen? Read that one.
 
 > **Human-readable reference**: see [`DS-ACME.md`](./DS-ACME.md) for full prose, illustrations, and usage rationale.
-> **Live tokens**: `apps/site/src/app/global.css`
-> **Storybook**: `npm run storybook` → `http://localhost:6006`
-
----
-
-## Overview
-
-Acme React is an enterprise SPA. The DS is built on four core principles:
-
-- **Acolhimento e confiança** — humanized communication; illustration style: `--primary` or `--background`, rounded strokes following the brand symbol shape.
-- **Accessibility first** — minimum WCAG AA contrast (4.5:1). Color is never the sole state indicator.
-- **Mobile-first** — four fixed breakpoints: 320 / 720 / 1400 / 1920 px.
-- **Token-based** — every visual value flows through a CSS custom property in `:root`. Never use hex literals in components.
-- **Composition-only** — extend primitives in `packages/ui` via `cn()` and `packages/layout`. Never edit shadcn source files.
+> **Generated theme**: `app/globals.css` — run `python3 docs/design-system/gerar-tema.py`
+> **Rendered tokens**: `showcase.html`, same folder
 
 ---
 
@@ -211,12 +203,12 @@ whenever used as a state indicator — color is never the sole signal.
 
 ## Typography
 
-Two official families, both injected via `next/font/local` from `packages/fonts`.
+Two official families, exposed as `--font-sans` and `--font-display` in the generated `@theme`.
 
 | Family      | CSS Variable                        | Tailwind              | When to use                                                     |
 | ----------- | ----------------------------------- | --------------------- | --------------------------------------------------------------- |
-| **Brand Display** | `--font-brand-display` (`--font-display`) | `font-display`        | Creative headings, banners, highlights. **Never** in body text. |
-| **Inter**  | `--font-inter` (`--font-sans`)     | `font-sans` (default) | All other text: headings, body, labels, buttons.                |
+| **Brand Display** | `--font-display` | `font-display`        | Creative headings, banners, highlights. **Never** in body text. |
+| **Inter**  | `--font-sans`     | `font-sans` (default) | All other text: headings, body, labels, buttons.                |
 
 `.font-display` applies `font-weight: 700` and `letter-spacing: -0.01em`.
 
@@ -248,13 +240,12 @@ Minimum body size: 14 px. Minimum metadata size: 12 px. Never below 12 px. Tap t
 | Default     | 1400 px   | `lg:`    |
 | Extra Large | 1920 px   | `2xl:`   |
 
-> ⚠️ **The Tailwind column above is aspirational, not implemented**: no
-> `--breakpoint-*` tokens are declared in any `@theme`, so `sm:`/`md:`/`lg:`
-> actually fire at Tailwind v4 defaults (640/768/1024). Only the manual
-> media queries in `tokens.css` (`.ds-container`, `.ds-card`,
-> `.sticky-cta`) use 720/1400/1920. See the desync note under DS-EXT-3.
+> ⚠️ **The Tailwind column is a reference, not a binding**: this template does
+> not declare `--breakpoint-*` tokens, so `sm:`/`md:`/`lg:` fire at Tailwind v4
+> defaults (640/768/1024). The four DS widths are design targets. How to apply
+> them with the variants that exist is in `DS-ACME.md` §2.
 
-### Responsive Container — `.ds-container`
+### Container
 
 | Breakpoint  | Padding Inline | Max Width |
 | ----------- | -------------- | --------- |
@@ -263,7 +254,7 @@ Minimum body size: 14 px. Minimum metadata size: 12 px. Never below 12 px. Tap t
 | Default     | 40 px          | 1400 px   |
 | Extra Large | 80 px          | 1920 px   |
 
-### Responsive Grid — `.ds-grid`
+### Grid gutter
 
 | Breakpoint  | Gap   |
 | ----------- | ----- |
@@ -272,7 +263,7 @@ Minimum body size: 14 px. Minimum metadata size: 12 px. Never below 12 px. Tap t
 | Default     | 30 px |
 | Extra Large | 40 px |
 
-### Card Padding — `.ds-card`
+### Card padding
 
 | Breakpoint | Padding |
 | ---------- | ------- |
@@ -280,19 +271,12 @@ Minimum body size: 14 px. Minimum metadata size: 12 px. Never below 12 px. Tap t
 | Tablet     | 24 px   |
 | Desktop    | 32 px   |
 
-```html
-<section class="ds-container">
-  <div class="ds-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-    <article class="ds-card ds-card--hover">…</article>
-  </div>
-</section>
-```
 
 ---
 
 ## Elevation & Depth
 
-All shadows use **navy at 20% opacity** — never pure black shadows.
+Every shadow is derived from `--primary` at 20% opacity — never pure black.
 
 | Token | Usage |
 | ---------------- | ----------------------------------- |
@@ -307,7 +291,6 @@ All shadows use **navy at 20% opacity** — never pure black shadows.
 
 | Token | Usage |
 | ----------------- | ---------------------- |
-| `--radius` (base) | Buttons, inputs, cards |
 | `--radius-sm` | Small badges |
 | `--radius-md` | Medium elements |
 | `--radius-lg` | Standard |
@@ -315,199 +298,15 @@ All shadows use **navy at 20% opacity** — never pure black shadows.
 
 ---
 
-## Components
-
-### Button
-
-```tsx
-// Primary (CTA) — bg-accent text-accent-foreground
-<Button className="bg-accent text-accent-foreground rounded-md px-6 py-3 font-semibold shadow-sm hover:shadow-lg transition">
-  Seja cliente
-</Button>
-
-// Secondary — border outline
-<Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-  Saiba mais
-</Button>
-
-// Tertiary (link)
-<Button variant="link" className="text-primary underline-offset-4">
-  Ver detalhes
-</Button>
-```
-
-Primitiva: `packages/ui/src/lib/button.tsx`
-
-### Float Label Input
-
-```html
-<div class="float-field" data-filled="true">
-  <input id="email" type="email" class="float-input" placeholder=" " />
-  <label for="email">*E-mail</label>
-</div>
-```
-
-States: `:focus-within` / `[data-filled="true"]` → label floats to 11 px + primary color.
-`[data-invalid="true"]` → border + label in destructive color.
-
-Primitiva: `.float-field` / `.float-input` utilities in `apps/site/src/app/global.css`.
-React wrapper: `packages/feature-signup/src/lib/fields/FloatInput.tsx`
-
-### DatePicker (DS-EXT-1)
-
-```tsx
-<DatePicker
-  value={vigenciaIni}
-  onChange={setVigenciaIni}
-  aria-invalid={hasError}
-/>
-```
-
-Date selection primitive introduced for SCREEN-A vigência fields (reused by
-SCREEN-B). Composed from a native `<input type="date">` (zero extra runtime
-dependency) so it ships a platform calendar popover + keyboard support, while
-its `value`/`onChange` stay canonical ISO `YYYY-MM-DD` strings (the
-transport-boundary shape). Reuses the `Input` tokens (border/height
-`h-9`/focus-ring/`aria-invalid`) plus a leading calendar glyph;
-`dark:[color-scheme:dark]` keeps the native control legible in dark mode.
-
-Primitiva: `packages/ui/src/lib/date-picker.tsx` (`DatePicker`).
-
-### CurrencyInput (DS-EXT-2)
-
-```tsx
-<CurrencyInput
-  value={vlItem}
-  onChange={setVlItem}
-  aria-invalid={hasError}
-/>
-```
-
-Money primitive introduced for SCREEN-A value fields (`vlItem`,
-`vlLimite`; reused by SCREEN-B). Composed from a plain text input driven as a
-pt-BR amount mask (**zero extra runtime dependency**): keystrokes are reduced to
-digits read as centavos, so the display is always a valid `1.234,56` amount
-while `value`/`onChange` stay a canonical JS number (`1234.56`) — the
-transport-boundary shape (`z.number()`). Reuses the `Input` tokens
-(border/height `h-9`/focus-ring/`aria-invalid`) plus a leading `R$` glyph and
-`tabular-nums` right alignment; `read-only`/`disabled` states mirror the DS.
-
-Primitiva: `packages/ui/src/lib/currency-input.tsx` (`CurrencyInput`).
-
-### Wizard header band + persistent footer (DS-EXT-3)
-
-Introduced for the Novo Cadastro wizard (apps/site). One context band
-per step card — never two step indicators on the same screen:
-
-- **Band anatomy**: single-line progress trail (28px bubbles, label beside
-  the bubble) + hairline `var(--border-muted)` + `font-display text-xl
-sm:text-2xl` title with the subtitle as an inline apposition. The
-  "Passo X de 4" eyebrow is forbidden when a progress trail is visible;
-  the step context is exposed via `aria-label` on the card region.
-- **`.sticky-cta--persist`** (additive modifier over `.sticky-cta`,
-  declared in `packages/tokens/src/tokens.css`): keeps the
-  wizard footer sticky at ≥720px. Background `var(--card)` (not
-  `--background` — no color step inside the card), top hairline
-  `var(--border-muted)`, bottom corners `var(--radius)`, own padding
-  12px @720 / 16px @1400 (vertical). Side bleed and bottom inset derive
-  from `--ds-card-pad` (custom property set by `.ds-card`: 20/24/32px),
-  so the band always reaches the card edge. Compound selector
-  (`.sticky-cta.sticky-cta--persist`) wins by specificity — source-order
-  independent. Pairs with `html:has(.sticky-cta--persist)
-{ scroll-padding-bottom: 96px }` so keyboard focus is never hidden
-  under the band (WCAG 2.4.11).
-- **Form rhythm (two levels)**: 16px (`space-y-4`) between field blocks,
-  12px (`gap-3`) inside a field group. `.float-input` height (56px) is
-  untouched.
-- **Form grid breakpoints**: field pairs use `sm:` (640px); asymmetric
-  rows of 3+ columns use `md:` (768px). See the breakpoint note below.
-
-> **Breakpoint desync note**: no `--breakpoint-*` tokens are declared in
-> the `@theme` blocks, so Tailwind v4 variants use its defaults
-> (`sm`=640, `md`=768, `lg`=1024, `2xl`=1536) while the DS media queries
-> (`.ds-container`, `.ds-card`, `.sticky-cta`) fire at 720/1400/1920.
-> Aligning them (declaring `--breakpoint-*`) is a high-blast-radius
-> follow-up — do not mix the two scales silently in new code.
-
-### Card
-
-```tsx
-<div className="ds-card ds-card--hover">
-  <h3 className="text-xl font-semibold text-foreground">Title</h3>
-  <p className="text-muted-foreground text-sm mt-2">Description</p>
-</div>
-```
-
-Primitiva: `.ds-card` + modifier classes. shadcn wrapper: `packages/ui/src/lib/card.tsx`
-
-### Alert (inline)
-
-```tsx
-// Attention (amber icon)
-<div className="flex items-start gap-2">
-  <TriangleAlert className="text-[var(--warning)] mt-0.5 shrink-0" size={20} />
-  <p><strong>Atenção:</strong> Envie os documentos referente à sua solicitação.</p>
-</div>
-
-// Info (primary icon)
-<div className="flex items-start gap-2">
-  <Info className="text-primary mt-0.5 shrink-0" size={20} />
-  <p>Para consultar serviços anteriores à data de corte da migração…</p>
-</div>
-```
-
-Primitiva: `packages/ui/src/lib/alert.tsx`
-
-### FAQ / Accordion
-
-```tsx
-<Accordion type="single" collapsible>
-  <AccordionItem value="q1">
-    <AccordionTrigger>Quais benefícios estão disponíveis?</AccordionTrigger>
-    <AccordionContent>
-      No nosso Programa de Benefícios você encontra…
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
-```
-
----
-
-## Do's and Don'ts
-
-### Do
-
-- Use tokens (`--primary`, `bg-accent`, `shadow-sm`) — never hex literals.
-- Combine `.ds-container` + `.ds-grid` for DS margins and gutters.
-- Use `.ds-card` + modifiers (`--hover`, `--selected`, `--muted`) as base; extend with Tailwind.
-- Animate only `transform` and `opacity` (GPU-safe).
-- Provide `dark:` variants on all new components.
-- Add `aria-hidden="true"` on decorative icons.
-- Respect `prefers-reduced-motion` (declared in `global.css`).
-
-### Don't
-
-- ❌ `bg-[#0055ff]` — use the token: `bg-primary`.
-- ❌ A hand-written `box-shadow` — use `shadow-sm` / `shadow-lg`; every shadow
-  in the system is derived from `--primary`.
-- ❌ Animate `width`, `height`, `top`, `left` — layout thrashing.
-- ❌ Combine Brand Display in long body text.
-- ❌ Use `--warning` at full opacity — only at 10% for Quick Access / Step-by-Step cards.
-- ❌ Banner vertical on mobile.
-- ❌ Edit files in `packages/ui` inline — extend via composition in `packages/layout` or features.
-- ❌ `any` type — use `unknown` + type guards.
-- ❌ Default exports — always named exports.
-
----
-
 ## Reference
 
-| Resource                                     | Path                                                                                 |
-| -------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Full prose guidelines                        | [`DS-ACME.md`](./DS-ACME.md)                                                   |
-| Design source document (authoritative for foundations) | `design-source.pdf`                                                          |
-| Live CSS tokens                              | `apps/site/src/app/global.css` |
-| shadcn primitives                            | `packages/ui/src/lib/`                               |
-| Layout composites                            | `packages/layout/src/lib/`                       |
-| Fonts (Brand Display + Inter)                     | `packages/fonts/src/lib/`                         |
-| Storybook host                               | `apps/storybook/`                                       |
+| What | Where |
+| --- | --- |
+| How to use each token, component anatomy, do/don't, accessibility | [`DS-ACME.md`](./DS-ACME.md) |
+| Generator: reads this file, writes the derived artifacts | [`gerar-tema.py`](./gerar-tema.py) |
+| Tailwind `@theme` — **generated**, do not edit | `app/globals.css` |
+| Rendered tokens — **generated** | [`showcase.html`](./showcase.html) |
+| shadcn primitives (`npx shadcn@latest add <name>`) | `components/ui/` |
+| Your own components | `components/` |
+
+This file answers *what is the value*. For *how do I use it*, read `DS-ACME.md`.

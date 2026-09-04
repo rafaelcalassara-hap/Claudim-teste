@@ -6,9 +6,11 @@
 > `showcase.html`. Aqui os tokens aparecem por **nome**, nunca por valor:
 > valor repetido em dois arquivos é valor que vai divergir.
 
-Documento de referência consolidado a partir do documento de design de origem e dos tokens já implementados em `apps/site/src/app/global.css`.
-
-> **Stack alvo:** Next.js 16 (App Router) + TypeScript estrito + Tailwind CSS + shadcn/ui + Radix. Tokens são expostos como CSS Custom Properties em `:root` e mapeados via `@theme inline` para uso direto em utilitários Tailwind (`bg-primary`, `text-foreground`, `shadow-sm`, etc.).
+> **Stack:** Next.js (App Router) + TypeScript + Tailwind v4 + shadcn/ui. O tema
+> é o `@theme` de `app/globals.css`, **gerado** do `DESIGN.md`; cada token vira
+> utilitária (`bg-primary`, `text-foreground`, `shadow-sm`, `rounded-lg`,
+> `px-container-md`). Primitivas do shadcn ficam em `components/ui/`, entram
+> por `npx shadcn@latest add <nome>` e depois o código é seu.
 
 ---
 
@@ -47,9 +49,13 @@ Documento de referência consolidado a partir do documento de design de origem e
    - 7.18 [File Upload](#718-file-upload)
    - 7.19 [Alerts e mensagens](#719-alerts-e-mensagens)
    - 7.20 [Float label input](#720-float-label-input)
+   - 7.21 [DatePicker](#721-datepicker)
+   - 7.22 [CurrencyInput](#722-currencyinput)
 8. [Acessibilidade](#8-acessibilidade)
 9. [Diretrizes de uso](#9-diretrizes-de-uso)
 10. [Referência rápida — utilitários Tailwind](#10-referência-rápida--utilitários-tailwind)
+11. [Como estender o design system](#11-como-estender-o-design-system)
+12. [Onde está cada coisa](#onde-está-cada-coisa)
 
 ---
 
@@ -59,7 +65,7 @@ Documento de referência consolidado a partir do documento de design de origem e
 - **Acessibilidade primeiro** — contraste mínimo WCAG AA (4.5:1). Cor nunca é o único indicador de estado.
 - **Mobile-first responsivo** — quatro breakpoints fixos (320 / 720 / 1400 / 1920 px) com grids, margens e gutters dedicados.
 - **Sistema baseado em tokens** — todo valor visual passa por uma CSS variable em `:root`; não use literais hex em componentes.
-- **Composição shadcn + Tailwind** — não modifique primitivas em `packages/ui/` inline; estenda via `cn()` e composição em `packages/layout/` ou em features.
+- **Composição shadcn + Tailwind** — primitiva entra por `npx shadcn@latest add` em `components/ui/` e a partir daí é sua. Composições de tela ficam em `components/`. Estenda com classes de token, não com CSS à parte.
 
 ---
 
@@ -74,7 +80,10 @@ Documento de referência consolidado a partir do documento de design de origem e
 | `Default`     | 1400 px   | 1024 – 1440 px      | Desktop padrão |
 | `Extra Large` | 1920 px   | a partir de 1440 px | Desktop amplo  |
 
-Mapeamento no Tailwind v4 (já default em `@theme`): `sm` ≈ 720, `lg` ≈ 1400, `2xl` ≈ 1920. Para fidelidade com o DS, use as utilidades semânticas `.ds-container` e `.ds-grid` declaradas em `global.css`.
+Os variants do Tailwind (`sm:` 640, `md:` 768, `lg:` 1024, `2xl:` 1536) **não**
+coincidem com essas faixas — o template não declara `--breakpoint-*`. Use os
+variants que existem para aplicar os tokens de espaçamento; as quatro larguras
+acima são alvo de design, não breakpoint de código.
 
 ### 2.2 Margens (container)
 
@@ -85,7 +94,7 @@ Mapeamento no Tailwind v4 (já default em `@theme`): `sm` ≈ 720, `lg` ≈ 1400
 | 1024 – 1440 px         | **40 px**         |
 | ≥ 1440 px (XL)         | **80 px**         |
 
-Implementação: classe utilitária `.ds-container` aplica `padding-inline` automático por faixa.
+Implementação: `px-container-sm md:px-container-md lg:px-container-default 2xl:px-container-xl` — tokens `--spacing-container-*`.
 
 ### 2.3 Gutter (grid)
 
@@ -96,7 +105,7 @@ Implementação: classe utilitária `.ds-container` aplica `padding-inline` auto
 | 1024 – 1440 px | **30 px**   |
 | ≥ 1440 px      | **40 px**   |
 
-Implementação: classe `.ds-grid` aplica `gap` correspondente.
+Implementação: `gap-gutter-sm md:gap-gutter-md lg:gap-gutter-default 2xl:gap-gutter-xl` — tokens `--spacing-gutter-*`.
 
 ### 2.4 Overlay
 
@@ -105,7 +114,7 @@ Implementação: classe `.ds-grid` aplica `gap` correspondente.
 
 ### 2.5 Sombras
 
-A paleta oficial usa **navy 20%** (não preto puro) — define a sensação de marca:
+Toda sombra deriva de `--primary` a 20% de opacidade, não de preto — é isso que dá sensação de marca:
 
 | Token CSS | Uso |
 | ---------------- | ---------------------------- |
@@ -115,12 +124,12 @@ A paleta oficial usa **navy 20%** (não preto puro) — define a sensação de m
 
 ### 2.6 Raio (border radius)
 
-| Token         | Valor                       |
-| ------------- | --------------------------- |
-| `--radius-sm` | `calc(var(--radius) - 4px)` |
-| `--radius-md` | `calc(var(--radius) - 2px)` |
-| `--radius-lg` | `var(--radius)`             |
-| `--radius-xl` | `calc(var(--radius) + 4px)` |
+| Token | Uso |
+| --- | --- |
+| `--radius-sm` | badges pequenos, pílulas |
+| `--radius-md` | elementos médios |
+| `--radius-lg` | padrão: botão, input, card |
+| `--radius-xl` | cantos de modal |
 
 ---
 
@@ -182,7 +191,7 @@ Todos os tokens vivem em `:root` e são consumidos pelo Tailwind via `@theme inl
 
 ## 4. Tokens — Tipografia
 
-Duas famílias oficiais, ambas injetadas via `next/font/local` em `packages/fonts/`.
+Duas famílias, expostas como `--font-sans` e `--font-display` no `@theme` gerado. Carregue-as no `app/layout.tsx` com `next/font` e passe a `className` da fonte no `<body>`.
 
 | Família     | Variável                            | Tailwind                        | Quando usar                                                               |
 | ----------- | ----------------------------------- | ------------------------------- | ------------------------------------------------------------------------- |
@@ -216,19 +225,27 @@ Regras complementares:
 
 ## 5. Tokens — Espaçamento e Layout
 
-- **Container responsivo:** `.ds-container` controla `max-width` e `padding-inline` automáticos (15 → 30 → 40 → 80 px) com `max-width: 1400px` no Default e `1920px` no XL.
-- **Grid responsivo:** `.ds-grid` aplica `gap` (15 → 20 → 30 → 40 px). Combine com `grid-cols-{n}` Tailwind por breakpoint.
-- **Padding interno padrão de cards:** `20px` (mobile) → `24px` (tablet) → `32px` (desktop), via `.ds-card`.
+Três famílias de token, todas em `--spacing-*` no `DESIGN.md`, todas viram
+utilitária de espaçamento (`p-`, `px-`, `gap-`, `m-`):
+
+- **Container** (`container-sm/md/default/xl`): margem lateral da página por
+  faixa. `mx-auto max-w-[1400px] px-container-sm md:px-container-md lg:px-container-default 2xl:px-container-xl`.
+- **Gutter** (`gutter-sm/md/default/xl`): espaço entre colunas de grid.
+  `grid gap-gutter-sm md:gap-gutter-md lg:gap-gutter-default`.
+- **Card padding** (`card-padding-mobile/tablet/desktop`): respiro interno de
+  card. `p-card-padding-mobile md:p-card-padding-tablet lg:p-card-padding-desktop`.
 
 ```html
-<section class="ds-container">
-  <div class="ds-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-    <article class="ds-card">…</article>
-    <article class="ds-card ds-card--hover">…</article>
-    <article class="ds-card ds-card--selected">…</article>
+<section class="mx-auto max-w-[1400px] px-container-sm md:px-container-md lg:px-container-default">
+  <div class="grid grid-cols-1 gap-gutter-sm sm:grid-cols-2 md:gap-gutter-md lg:grid-cols-3 lg:gap-gutter-default">
+    <article class="rounded-lg border border-primary bg-card p-card-padding-mobile shadow-sm md:p-card-padding-tablet lg:p-card-padding-desktop">…</article>
   </div>
 </section>
 ```
+
+Não existe classe `.ds-*` neste projeto. Tudo é composição de utilitária de
+token — se precisar repetir a mesma combinação três vezes, vire componente em
+`components/`, não classe em CSS à parte.
 
 ---
 
@@ -244,7 +261,11 @@ Regras complementares:
 
 ## 7. Componentes
 
-> Cada componente abaixo já tem (ou deve ter) implementação em `packages/ui` (primitivos shadcn) ou `packages/layout` (composições com regras Acme). **Nunca duplique primitivas** — adicione-as via skill a skill de scaffold do projeto.
+> Primitiva (botão, input, dialog, accordion) vem do shadcn: `npx shadcn@latest
+> add <nome>` grava em `components/ui/` e o código passa a ser seu. Composição
+> de tela (header, card de serviço, banner) é sua e mora em `components/`.
+> **Não reescreva uma primitiva que o shadcn já tem.** Cada seção abaixo diz o
+> que o componente **é** e como se comporta; os valores estão no `DESIGN.md`.
 
 ### 7.1 Header
 
@@ -316,7 +337,7 @@ Anatomia (PDF): padding interno `24 / 16 / 24 / 16` (T/R/B/L), borda `3 px` opci
 ### 7.8 Slider e arrows
 
 - **Indicador de slide ativo:** ponto cheio `--primary`, inativo `--border-muted`. Diâmetros: 6 px inativo / 10 px ativo.
-- **Arrow button** (`.ds-arrow`): 40×40 px, `border-radius: var(--radius)`, fundo branco, sombra `--shadow-sm`.
+- **Arrow button**: `size-10 rounded-lg border border-primary bg-background text-primary shadow-sm`.
   - Hover: borda e ícone passam para `--primary`.
   - Disabled: borda e ícone `--border-muted`.
 - Em desktop o slider é clicável; em mobile/tablet, swipe.
@@ -412,7 +433,7 @@ Variante “Quero ser fornecedor”: 4 etapas (`Preencha o formulário → Cota�
   - **Radio group** horizontal (“Manhã / Tarde / Ambos”).
   - **Textarea** sempre full width.
   - **reCAPTCHA** “Não sou um robô”.
-  - **Botão Enviar** primário, alinhado à direita em desktop e full width em mobile (`sticky-cta`).
+  - **Botão Enviar** primário, alinhado à direita em desktop e full width em mobile (`sticky bottom-0 bg-card border-t border-border-muted`).
 - Mensagens:
   - Asterisco `*` antes de labels obrigatórios + nota `*Estes campos são obrigatórios`.
   - Erro: borda `--destructive`, label `--destructive`, `data-invalid="true"`.
@@ -480,54 +501,39 @@ Estados:
 - `[data-invalid="true"]` → borda + label em `--destructive`.
 - `:disabled` → fundo `--muted`, opacidade 0.7, cursor not-allowed.
 
-### 7.21 DatePicker (DS-EXT-1)
+### 7.21 DatePicker
 
-Primitiva de seleção de data adicionada para os campos de vigência das telas
-SCREEN-A / SCREEN-B (`dtInicio`/`dtFim`/`dtVigenciaIni`/`dtVigenciaFim`).
-Componente: `packages/ui/src/lib/date-picker.tsx` (`DatePicker`).
-
-```tsx
-<DatePicker value={dtInicio} onChange={setDtInicio} aria-invalid={hasError} />
-```
-
-- Composto sobre `<input type="date">` nativo — **sem nova dependência de
-  runtime** (react-day-picker/calendar não estão instalados). Herda o calendário
-  nativo da plataforma, navegação por teclado e exibição localizada.
-- `value`/`onChange` trafegam sempre em ISO `YYYY-MM-DD` (a forma esperada no
-  boundary Zod `isoDate`), evitando conversões de fuso.
-- Reaproveita os tokens do `Input` (`border-input`, `h-9`, `focus-visible:ring`,
-  `aria-invalid`) + glifo de calendário à esquerda.
-- **Dark mode:** `dark:[color-scheme:dark]` mantém o controle nativo legível.
-- Estados: idle / foco (`focus-visible:ring`) / inválido (`aria-invalid`) /
-  desabilitado (`disabled:opacity-50`).
-
-### 7.22 CurrencyInput (DS-EXT-2)
-
-Primitiva monetária adicionada para os campos de valor das telas SCREEN-A /
-SCREEN-B (`vlItem`, `vlLimite`). Componente:
-`packages/ui/src/lib/currency-input.tsx` (`CurrencyInput`).
+Seleção de data composta sobre `<input type="date">` nativo — **sem dependência
+nova**. Herda o calendário da plataforma, navegação por teclado e formato
+localizado.
 
 ```tsx
-<CurrencyInput
-  value={vlItem}
-  onChange={setVlItem}
-  aria-invalid={hasError}
-/>
+<DatePicker value={dataInicio} onChange={setDataInicio} aria-invalid={temErro} />
 ```
 
-- Composto sobre `<input type="text">` como máscara de valor — **sem nova
-  dependência de runtime**. Cada tecla é reduzida a dígitos interpretados como
-  centavos, então o texto exibido é sempre um valor pt-BR válido (`1.234,56`).
-- `value`/`onChange` trafegam sempre como número canônico JS (`1234.56`), a forma
-  esperada no boundary Zod `z.number()` — sem ambiguidade de parsing de locale,
-  sem `NaN`.
-- Reaproveita os tokens do `Input` (`border-input`, `h-9`, `focus-visible:ring`,
-  `aria-invalid`) + glifo `R$` à esquerda e alinhamento à direita com
-  `tabular-nums`.
-- **Dark mode:** herda `dark:bg-input/30` do padrão de input; símbolo em
-  `text-muted-foreground`.
-- Estados: idle / foco / inválido (`aria-invalid`) / somente-leitura
-  (`read-only:opacity-70`) / desabilitado (`disabled:opacity-50`).
+- `value`/`onChange` trafegam em ISO `YYYY-MM-DD`, a forma que o `zod` valida
+  na server action — sem conversão de fuso no caminho.
+- Reaproveita o `Input` do shadcn: `border-input`, altura, `focus-visible:ring`,
+  `aria-invalid`. Glifo de calendário à esquerda.
+- Estados: idle · foco · inválido (`aria-invalid`) · desabilitado (`disabled:opacity-50`).
+
+### 7.22 CurrencyInput
+
+Campo monetário composto sobre `<input type="text">` com máscara pt-BR —
+**sem dependência nova**. Cada tecla vira dígito em centavos; o texto exibido é
+sempre `1.234,56`.
+
+```tsx
+<CurrencyInput value={valor} onChange={setValor} aria-invalid={temErro} />
+```
+
+- `value`/`onChange` trafegam como número JS (`1234.56`), a forma que
+  `z.number()` espera — sem parsing de locale, sem `NaN`. Dinheiro no banco é
+  `Int` em centavos; a conversão é na fronteira.
+- Reaproveita o `Input` do shadcn + glifo `R$` à esquerda + `tabular-nums`
+  alinhado à direita.
+- Estados: idle · foco · inválido · somente-leitura (`read-only:opacity-70`) ·
+  desabilitado.
 
 ---
 
@@ -540,7 +546,6 @@ SCREEN-B (`vlItem`, `vlLimite`). Componente:
 - **Tap target:** mínimo 44×44 px em touch (`h-11`).
 - **Daltonismo:** evite combinar as duas cores de destaque da marca (`--highlight` + `--accent`) em alta área. Prefira contraste preto/branco quando precisar.
 - **Reduced motion:** respeite `prefers-reduced-motion: reduce` (já declarado em `global.css`).
-- **Dark mode:** todo componente DEVE incluir variantes `dark:` (regra do projeto). Use os mesmos tokens — apenas redeclare em `:root.dark { … }` quando necessário.
 
 ---
 
@@ -548,154 +553,102 @@ SCREEN-B (`vlItem`, `vlLimite`). Componente:
 
 ### Faça
 
-- Use sempre os tokens (`--primary`, `--accent`, `bg-secondary`, `shadow-sm`, etc.) — nunca hex literal.
-- Combine `.ds-container` + `.ds-grid` para garantir margens e gutters do DS.
-- Para cards, use `.ds-card` como base e estenda com classes Tailwind. Estado
-  de hover e de selecionado saem de `--color-soft` e `--color-secondary`.
-- Para inputs, use `.float-field` + `.float-input` ou o componente `Input` de `@acme/ui` envolvido no padrão.
-- Animações com Framer Motion: somente `transform` e `opacity` (regra do projeto — GPU-safe).
-- Ilustrações: paleta restrita (primária + branco) com traçado humanizado.
+- **Token, sempre.** `bg-primary`, `text-muted-foreground`, `shadow-sm`,
+  `rounded-lg`, `px-container-md`. O valor vive no `DESIGN.md`; o componente
+  só conhece o nome.
+- **Container e grid por token de espaçamento** (§5). Repetiu a combinação
+  três vezes? Vire componente em `components/`, não classe em CSS à parte.
+- **Card**: `rounded-lg border border-primary bg-card shadow-sm` + padding por
+  breakpoint (§5). Hover: `hover:shadow-lg transition-shadow`. Selecionado:
+  `ring-2 ring-primary`. Alternativo sem destaque: `border-border-muted bg-secondary`.
+- **Input**: o `Input` do shadcn em `components/ui/`, envolvido no padrão de
+  float label (§7.7) quando a tela pede.
+- **Animação só em `transform` e `opacity`** — o resto força layout e trava em
+  máquina fraca. Respeite `prefers-reduced-motion`.
+- **Ícone decorativo leva `aria-hidden="true"`.** Ícone que carrega
+  informação leva rótulo.
+- **Ilustração**: só `--primary` e `--background`, traçado humanizado (§1).
 
 ### Não faça
 
-- ❌ Hex literal em componente (`bg-[#0055ff]`) — use o token: `bg-primary`.
-- ❌ Sombras pretas (`rgba(0, 0, 0,0.x)`) — todas as sombras usam **navy 20%**.
-- ❌ Animar `width`, `height`, `top`, `left` — viola regra de performance.
-- ❌ Combinar Brand Display em corpo de texto longo.
-- ❌ Usar `--warning` em fundo cheio — apenas a **10% de opacidade** e **somente em Atalhos / Passo a Passo**.
-- ❌ Banner vertical em mobile.
-- ❌ Acessar arquivos de primitivas em `packages/ui` para editar inline — sempre estender por composição.
+- ❌ Hex na classe (`bg-[#0055ff]`) ou em `style={{}}` — o hook bloqueia, e
+  com razão: a cor fica órfã quando a marca mudar.
+- ❌ Cor da paleta genérica do Tailwind (`bg-blue-600`, `text-gray-500`) —
+  é uma segunda identidade visual entrando pela porta dos fundos.
+- ❌ Classe de tema que não é token (`bg-azul`) — não gera estilo nenhum.
+- ❌ `box-shadow` escrito à mão ou sombra preta — toda sombra deriva de
+  `--primary` (§2.5). Use `shadow-sm` / `shadow-lg`.
+- ❌ Editar `app/globals.css` — é gerado; some na próxima execução.
+- ❌ Animar `width`, `height`, `top`, `left`.
+- ❌ Brand Display em corpo de texto longo (§4).
+- ❌ `--warning` em fundo cheio — só a 10%, e só em Atalhos / Passo a Passo.
+- ❌ Banner vertical em mobile (§7.5).
+- ❌ Reescrever primitiva que o shadcn já entrega. Adicione, depois estenda.
+- ❌ Estado sinalizado só por cor. Combine com ícone ou rótulo (§8).
 
 ---
 
 ## 10. Referência rápida — utilitários Tailwind
 
-| Necessidade                  | Classe                                                                                                                            |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Container DS responsivo      | `ds-container`                                                                                                                    |
-| Grid DS responsiva           | `ds-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`                                                                               |
-| Card padrão                  | `ds-card`                                                                                                                         |
-| Card hoverable               | `ds-card ds-card--hover`                                                                                                          |
-| Card selecionado             | `ds-card ds-card--selected`                                                                                                       |
-| Card alternativo (sem borda) | `ds-card ds-card--muted`                                                                                                          |
-| Botão primário (CTA)         | `bg-accent text-accent-foreground rounded-md px-6 py-3 font-semibold shadow-sm hover:shadow-lg transition`                        |
-| Botão secundário             | `border border-primary text-primary rounded-md px-6 py-3 font-semibold hover:bg-primary hover:text-primary-foreground transition` |
-| Link DS                      | `text-primary underline-offset-4 hover:underline focus-visible:underline`                                                         |
-| Texto título display         | `font-display text-4xl tracking-tight`                                                                                            |
-| Texto corpo padrão           | `font-sans text-base leading-7 text-foreground`                                                                                   |
-| Texto auxiliar               | `text-sm text-muted-foreground`                                                                                                   |
-| Alerta de atenção (inline)   | `flex items-start gap-2 text-foreground` + ícone `text-[var(--warning)]`                                                          |
-| Foco acessível custom        | `focus-visible:shadow-[var(--shadow-focus)] outline-none`                                                                         |
-| Sticky CTA mobile            | `sticky-cta`                                                                                                                      |
-| Tabular nums                 | `tabular-nums`                                                                                                                    |
-| Shake (erro de form)         | `shake`                                                                                                                           |
+Tudo abaixo é utilitária gerada de token do `DESIGN.md` ou nativa do Tailwind.
+Nada aqui exige CSS à parte.
 
-"
-".---
-
-## 11. Extensões por tela
-
-Extensões pontuais do DS, justificadas por dados/domínio e registradas no Storybook. Promover a primitiva de primeira-classe quando o uso se generalizar.
-
-### 11.1 APP-EXT — `TicketStatusBadge` (conjunto de 10 estados FL_STATUS)
-
-A primitiva compartilhada `Badge` oferece 6 variantes; o domínio de senha/ticket do APP-EXT tem **10 estados** (`FL_STATUS` 0–9). Em vez de mutar a primitiva, cada estado **compõe tokens registrados no DS** sobre `variant="outline"` via `cn()` — uma mistura de tokens semânticos e da paleta de dados `chart-*` (ver DESIGN.md › Colors › Data Visualization), pois 10 estados excedem os 6 tokens semânticos disponíveis.
-
-Mapeamento exato (código ↔ token):
-
-| FL_STATUS | Rótulo         | Token de cor                                   |
-| --------- | -------------- | ---------------------------------------------- |
-| 0         | Pendente       | `muted`                                        |
-| 1         | Aguardando     | `primary`                                      |
-| 2         | Chamado        | `chart-3` (laranja — atenção)                  |
-| 3         | Em atendimento | `primary`                                      |
-| 4         | Atendido       | `chart-2` (verde — sucesso)                    |
-| 5         | Ausente        | `chart-5` (vermelho-laranja — negativo brando) |
-| 6         | Cancelado      | `destructive`                                  |
-| 7         | Pausado        | `muted`                                        |
-| 8         | Transferido    | `chart-4` (violeta — transição especial)       |
-| 9         | Encerrado      | `chart-2` (verde — sucesso)                    |
-
-- A cor **nunca** é o único indicador: cada estado combina ícone + rótulo de texto.
-- Todos os tokens acima estão registrados em `DESIGN.md` (semânticos em Colors › Status/Surfaces; `chart-1..5` em Colors › Data Visualization) e expostos como `--color-chart-N` no `@theme` consumido (console `globals.css` e Storybook `preview.css`, ambos via `tokens-internal.css`, com redefinição `.dark`).
-- Render-only — sem lógica de transição no cliente (estado é derivado do servidor).
-- Storybook: `APP-EXT / DS Extensions / TicketStatusBadge` (história `AllStates` cobre os 10 estados em fundo claro e escuro).
-- Implementação: `packages/feature-directory/src/lib/components/TicketStatusBadge.tsx`.
-
-### 11.2 APP-EXT — `ColorPickerDialog` / swatch de cor definida pelo usuário (off-palette por dado)
-
-O fundo do swatch é um valor arbitrário armazenado pelo usuário (`TB_USER_COLOR.CD_COLOR`), **não** um token do DS. É o único ponto em que `style` inline dinâmico é permitido — apenas no quadrado de cor.
-
-- Cada swatch expõe o nome da cor via `aria-label`/`title`, então a cor não é o único indicador.
-- Storybook: `APP-EXT / DS Extensions / ColorPickerDialog (swatch)`.
-- Implementação: `ColorPickerDialog.tsx` e o preview em `UserColorForm.tsx` / `UserColorsPage.tsx`.
-
-### 11.3 APP-EXT — `FormDialog` cap de scroll (`max-h-[85dvh]`)
-
-O `FormDialog.tsx` aplica `max-h-[85dvh]` no contêiner do diálogo para impedir que formulários longos ultrapassem a viewport, habilitando scroll interno. O DS **não** define token de altura relativa à viewport (`dvh`), então este é um **valor arbitrário documentado** — exceção pontual, restrita ao cap de scroll do diálogo.
-
-- Escopo: apenas o contêiner do `FormDialog`; nenhum outro componente usa `dvh`.
-- `85dvh` deixa margem para a barra de endereços móvel (dynamic viewport height) e respeita o padding do overlay.
-- Promoção futura: se mais diálogos precisarem do mesmo cap, registrar o
-  token no `DESIGN.md` e migrar. Enquanto for um caso só, fica na classe.
-- Implementação: `packages/feature-directory/src/lib/components/forms/FormDialog.tsx`.
-
-### 11.4 Novo Cadastro — faixa de cabeçalho de wizard + rodapé persistente (DS-EXT-3)
-
-Anatomia canônica do card de passo de wizard (`WizardShell` em
-`packages/feature-signup/src/lib/components/wizard/`):
-
-- **Faixa única de contexto** no topo do card: trilha de progresso em linha
-  única (bolhas de 28px com rótulo ao lado, alvo de toque de 44px restaurado
-  via pseudo-elemento `after:-inset-2`) + hairline `var(--border-muted)` +
-  título `font-display text-xl sm:text-2xl` com subtítulo como aposto na
-  mesma baseline.
-- **Um único indicador de passo por tela.** O card expõe o contexto por
-  `aria-label="Passo X de 4: {título}"` na região; a trilha visível é o
-  indicador. **Don't:** repetir "Passo X de 4" em eyebrow/texto quando a
-  trilha está visível; usar sub-headers de seção **puramente decorativos**
-  dentro do corpo (custam mais altura do que o agrupamento que entregam —
-  rótulos semanticamente necessários, como os de grupos de checkboxes,
-  continuam válidos).
-- **Rodapé `.sticky-cta--persist`** (modificador aditivo sobre
-  `.sticky-cta`): CTA sempre visível também em ≥720px. Fundo `var(--card)`,
-  hairline superior, cantos inferiores `var(--radius)`, padding vertical
-  12px @720 / 16px @1400; sangria lateral/inferior via `--spacing-card-padding-mobile`
-  (definida pelo `.ds-card`: 20/24/32px), `z-index: 10`. Acompanha
-  `scroll-padding-bottom` no `html` para o foco por teclado nunca ficar
-  sob a faixa (WCAG 2.4.11). A legenda "Campos com asterisco (\*) são
-  obrigatórios" vive no rodapé (custo de altura zero), oculta em mobile.
-- **Ritmo vertical em dois níveis**: 16px (`space-y-4`) entre blocos de
-  campo; 12px (`gap-3`) dentro de um agrupamento. A altura de 56px do
-  `.float-input` permanece intocada.
-- **Grids de formulário**: pares de campos em `sm:` (640px); linhas
-  assimétricas de 3+ colunas (ex.: Documento ⅓ + Nome ⅔; Registro Profissional ½ + UF-Registro ¼ +
-  Código da Unidade ¼) em `md:` (768px), para não espremer campos mascarados na faixa
-  640–743px, onde o `.ds-card` ainda usa padding de 20px.
-- Storybook: `Public / SignupWizard / Wizard / WizardShell`
-  (`ComFaixaDeProgresso`, `RodapePersistente`) e `.../WizardProgress`.
-
-> **Dessincronia de breakpoints (registro):** o `@theme` dos portais não
-> declara `--breakpoint-*`, então as variantes Tailwind v4 usam os defaults
-> (sm=640, md=768, lg=1024) e NÃO os breakpoints do DS (720/1400/1920), que
-> valem apenas nas media queries manuais de `tokens.css`. Alinhar as
-> duas escalas é follow-up de blast radius alto — não misturar as escalas
-> silenciosamente em código novo.
+| Necessidade | Classe |
+| --- | --- |
+| Container da página | `mx-auto max-w-[1400px] px-container-sm md:px-container-md lg:px-container-default 2xl:px-container-xl` |
+| Grid com gutter do DS | `grid gap-gutter-sm md:gap-gutter-md lg:gap-gutter-default` |
+| Card padrão | `rounded-lg border border-primary bg-card shadow-sm p-card-padding-mobile md:p-card-padding-tablet lg:p-card-padding-desktop` |
+| Card com hover | card padrão + `hover:shadow-lg transition-shadow` |
+| Card selecionado | card padrão + `ring-2 ring-primary` |
+| Card alternativo (sem destaque) | `rounded-lg border border-border-muted bg-secondary` + padding |
+| Botão primário (ação) | `bg-accent text-accent-foreground rounded-lg px-6 py-3 font-bold shadow-sm hover:shadow-lg transition` |
+| Botão secundário | `border border-primary text-primary rounded-lg px-6 py-3 font-bold hover:bg-primary hover:text-primary-foreground transition` |
+| Link | `text-primary underline-offset-4 hover:underline focus-visible:underline` |
+| Título display | `font-display text-4xl tracking-tight` |
+| Corpo | `font-sans text-base leading-7 text-foreground` |
+| Texto auxiliar | `text-sm text-muted-foreground` |
+| Alerta de atenção | `flex items-start gap-2` + ícone `text-warning` + `<b>Atenção:</b>` |
+| Alerta informativo | `flex items-start gap-2 bg-soft border-l-4 border-primary p-4 rounded-lg` |
+| Foco visível | já é global (`:focus-visible` em `globals.css`); não precisa de classe |
+| Rodapé fixo de wizard | `sticky bottom-0 bg-card border-t border-border-muted` |
+| Números alinhados | `tabular-nums` |
 
 ---
 
-## Implementação de referência
+## 11. Como estender o design system
 
-- **Tokens vivos:** `apps/site/src/app/global.css`
-- **Fontes:** `packages/fonts/` (Inter + Brand Display via `next/font/local`)
-- **Primitivas shadcn:** `packages/ui/src/lib`
-- **Composições de layout (AppShell, TitleBar, Sidebar, etc.):** `packages/layout/src/lib`
-- **Adicionar nova primitiva shadcn:** sempre via skill a skill de scaffold do projeto — nunca copiar arquivos manualmente.
+Uma tela pediu algo que o DS não cobre — um estado a mais no badge, uma cor de
+gráfico, um componente novo. A ordem é esta, e ela existe para o DS continuar
+sendo um só:
+
+1. **Já existe?** Procure em §7 e no `DESIGN.md › components`. A maior parte do
+   que parece novo é variante do que já está lá.
+2. **É valor novo** (cor, raio, espaçamento)? Entra no front matter do
+   `DESIGN.md`, roda `python3 docs/design-system/gerar-tema.py`, e só então
+   vira classe. Nunca o contrário. Tema é decisão de design — confirme com quem
+   pediu antes de inventar o valor.
+3. **É componente novo?** Componha em `components/` com as utilitárias de
+   token, e registre a anatomia aqui em §7, com o mesmo formato das outras.
+4. **É regra nova** (quando usar, quando não)? Vai em §9.
+
+O que **não** se faz: criar a classe primeiro e documentar depois. É assim que
+o guia passa a citar token que não existe — e foi exatamente o que aconteceu
+antes deste arranjo.
 
 ---
 
-## Histórico
+## Onde está cada coisa
 
-- **DS V2** — versão atual (documento de design de origem). Tokens sincronizados com o `global.css` em vigor.
+| O quê | Onde |
+| --- | --- |
+| Valores de tema (a fonte) | `docs/design-system/DESIGN.md`, front matter |
+| Gerador dos derivados | `docs/design-system/gerar-tema.py` |
+| `@theme` do Tailwind — **gerado** | `app/globals.css` |
+| Tokens renderizados — **gerado** | `docs/design-system/showcase.html` |
+| Primitivas shadcn | `components/ui/` — `npx shadcn@latest add <nome>` |
+| Suas composições | `components/` |
+| Fontes | `app/layout.tsx`, via `next/font` |
 
-> Para qualquer divergência entre este documento e o PDF original, **o PDF prevalece** para foundations e o `global.css` prevalece para implementação. Atualize este arquivo via PR sempre que houver evolução do DS.
+Divergência entre este guia e o `DESIGN.md`: o `DESIGN.md` prevalece para
+valor, este guia prevalece para uso. Divergência entre qualquer um dos dois e
+o `app/globals.css`: é bug — o CSS é gerado, rode o gerador e a checagem.
